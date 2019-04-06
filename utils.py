@@ -26,7 +26,11 @@ def to_array(dataset):
         # 4. a2p
         ft_vec.append(cur_phone['a2p'])
         # 5. ts_out
-        ft_vec.extend(xtract.get_feature_vec(cur_phone['ts_out'], True)
+        ft_vec.extend(xtract.get_feature_vec(cur_phone['ts_out'], True))
         # 6. ts_in
-        ft_vec.extend(xtract.get_feature_vec(cur_phone['ts_in'], False)
+        ft_vec.extend(xtract.get_feature_vec(cur_phone['ts_in'], False))
+
+        ret[i] = ft_vec
+
+    return ret
 
