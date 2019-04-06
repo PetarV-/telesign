@@ -10,9 +10,6 @@ NB_TOCS = 5
 class FeatureExtractor():
 
     def _get_mean(self, key, use_only_successful):
-        if len(self.phone_calls) == 0:
-            return 0.0
-
         arr = []
         for phone_call in self.phone_calls:
             if use_only_successful:
@@ -20,13 +17,13 @@ class FeatureExtractor():
                     arr.append(phone_call[key])
             else:
                 arr.append(phone_call[key])
+
+        if len(arr) == 0:
+            return 0.0
 
         return np.mean(arr)
 
     def _get_var(self, key, use_only_successful):
-        if len(self.phone_calls) <= 1:
-            return 0.0
-
         arr = []
         for phone_call in self.phone_calls:
             if use_only_successful:
@@ -34,6 +31,9 @@ class FeatureExtractor():
                     arr.append(phone_call[key])
             else:
                 arr.append(phone_call[key])
+
+        if len(arr) <= 1:
+            return 0.0
 
         return np.std(arr)
 
