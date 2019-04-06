@@ -57,14 +57,14 @@ class FeatureExtractor():
         # Phone calls num.
         feature_vec.add(len(phone_calls))
 
-        # Unique phone numbers.
-        unique_phones = set()
-        for phone_call in phone_calls:
-            if is_a:
-                unique_phones.add(phone_call['id_a'])
-            else:
-                unique_phones.add(phone_call['id_b'])
+		# Unique phone numbers.
+		unique_phones = set()
+		for phone_call in phone_calls:
+			if is_a:
+				unique_phones.add(phone_call['id_b'])
+			else:
+				unique_phones.add(phone_call['id_a'])
 
         feature_vec.add(len(unique_phones))
 
-        return feature_vec
+		return feature_vec
