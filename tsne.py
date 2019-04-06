@@ -18,6 +18,8 @@ class TSNEReductor():
         self.ott_position = bl_position - 4
         self.prm_position = bl_position - 3
         self.tlf_position = bl_position - 2
+        self.ezy_position = 1341
+        self.dsp_position = 1342 
 
         self.n_components = n_components
         self.tsne = TSNE(n_components)
@@ -26,7 +28,8 @@ class TSNEReductor():
         # Remember all important.
         self.bl_mask = np.zeros((X.shape[0]), dtype=bool)
 
-        self.sms_mask = np.zeros((X.shape[0]), dtype=bool)
+        self.ezy_mask = np.zeros((X.shape[0]), dtype=bool)
+        self.dsp_mask = np.zeros((X.shape[0]), dtype=bool)
 
         self.mob_mask = np.zeros((X.shape[0]), dtype=bool)
         self.fix_mask = np.zeros((X.shape[0]), dtype=bool)
@@ -40,8 +43,10 @@ class TSNEReductor():
             sample = X[i]
             if sample[self.bl_position]:
                 self.bl_mask[i] = True
-            #elif sample[self.sms_position]:
-            #    self.sms_mask[i] = True
+            elif sample[self.ezy_position] > 0.1:
+                self.ezy_mask[i] = True
+            elif sample[self.dsp_position] > 0.1:
+                self.dsp_mask[i] = True
             elif sample[self.mob_position] == 1:
                 self.mob_mask[i] = True
             elif sample[self.fix_position] == 1:
@@ -94,13 +99,17 @@ class TSNEReductor():
         x_axis_norm = self.X[self.norm_mask,0]
         y_axis_norm = self.X[self.norm_mask,1]
 
+        x_axis_ezy = self.X[self.ezy_mask,0]
+        y_axis_ezy = self.X[self.ezy_mask,1]
+
+        x_axis_dsp = self.X[self.dsp_mask,0]
+        y_axis_dsp = self.X[self.dsp_mask,1]
+
         # print(len(x_axis_data))
         # print(len(x_axis_black_listed))
 
         # Plot.
         plt.scatter(x_axis_norm, y_axis_norm, color='r', label='Remaining data')
-
-        plt.scatter(x_axis_bl, y_axis_bl, color='k', label='Black listed')
 
         plt.scatter(x_axis_mob, y_axis_mob, color='c', label='Mobile')
         plt.scatter(x_axis_fix, y_axis_fix, color='m', label='Fixed')
@@ -108,6 +117,10 @@ class TSNEReductor():
         plt.scatter(x_axis_ott, y_axis_ott, color='y', label='OTT')
         plt.scatter(x_axis_prm, y_axis_prm, color='b', label='Premium')
         plt.scatter(x_axis_tlf, y_axis_tlf, color='g', label='Toll-free')
+
+        plt.scatter(x_axis_dsp, y_axis_dsp, color='#000080', label='DSP')
+        plt.scatter(x_axis_ezy, y_axis_ezy, color='#2F4F4F', label='EasyConnect')
+        plt.scatter(x_axis_bl, y_axis_bl, color='k', label='Black listed')
 
         plt.legend()
         plt.show()
