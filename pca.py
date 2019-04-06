@@ -20,7 +20,7 @@ class PCAReductor():
         self.bl_indices = np.asarray(self.bl_indices)
 
         # Dimensionality reduction.
-        self.X = pca.fit_transform(X)
+        self.X = self.pca.fit_transform(X)
 
     def plot_data(self):
         if self.X is None:
@@ -39,6 +39,6 @@ class PCAReductor():
 
         # Plot.
         plt.plot(x_axis_data, y_axis_data, 'r', label='All data')
-        plt.plot(x_axis_black_listed, x_axis_black_listed, 'g', label='Black listed')
+        plt.plot(x_axis_black_listed, x_axis_black_listed, 'k', label='Black listed')
         plt.legend()
         plt.show()
