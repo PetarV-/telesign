@@ -6,14 +6,33 @@ NB_PHONES = 9872
 NB_COUNTRIES = 266 
 # number of TOCs
 NB_TOCS = 5
+# call status number
+NB_STATUS = 3
 
 class FeatureExtractor():
+
+    def _is_successful(self, phone_call):
+        status = phone_call['status_cat']
+
+        # No error
+        if status[2] == 1:
+            return True
+
+        # Subscriber error
+        if status[1] == 1:
+            # TODO
+            return False
+
+        # Network error
+        if status[0] == 1:
+            # TODO
+            return False
 
     def _get_mean(self, key, use_only_successful):
         arr = []
         for phone_call in self.phone_calls:
             if use_only_successful:
-                if phone_call['status_cat'][2] == 1:
+                if self._is_successful(phone_call):
                     arr.append(phone_call[key])
             else:
                 arr.append(phone_call[key])
@@ -43,6 +62,22 @@ class FeatureExtractor():
             arr.append(phone_call[key])
 
         return np.maximum(arr)
+
+    def get_status_feature_vec(self, phone_calls):
+        self.phone_calls = phone_calls
+        feature_vec = []
+
+        # Call status.
+        status_vec = np.zeros(NB_STATUS)
+        if len(phone_calls) > 0:
+            for phone_call in phone_calls:
+                status_vec += status_vec['status_cat']
+
+            status_vec /= np.sum(status_vec)
+
+        feature_vec.extend(status_vec)
+
+        return feature_vec
 
     def get_feature_vec(self, phone_calls, is_a):
         self.phone_calls = phone_calls
