@@ -61,10 +61,10 @@ numbers_csv = csv.DictReader(numbers_file, delimiter = ',')
 dataset = Dataset()
 
 number_types = {'MOBILE' : 1, 'FIXED' : 2, 'PREMIUM' : 5, 'TECHNICAL' : 3, 'OTT' : 4, 'TOLLFREE' : 6, '' : 7}
-tocses = {'F/MNO' : 1, 'Wholesale' : 2, 'EasyConnect' : 3, 'DSP' : 4}
+tocses = {'F/MNO' : 1, 'Wholesale' : 2, 'EasyConnect' : 3, 'DSP' : 4, 'Unknown' : 5}
 status_cats = {'Network' : 1, 'Subscriber' : 2, 'No Error' : 3}
 releases = {'Calling party released the call first.' : 1, 'Both parties released the call at the same time.' : 2, 'Called party released the call first.' : 3}
-statuses = {'Subscriber$No user responding' : 1, 'No Error$Normal call clearing' : 2, 'Network$No circuit/channel available' : 3, 'Network$Temporary failure' : 4, 'No Error$Send special information tone' : 5, 'Subscriber$Unallocated or unassigned number' : 6, 'Network$Internetworking,  unspecified' : 7, 'Network$No route to destination' : 8, 'No Error$Normal,  unspecified' : 9, 'Subscriber$Call rejected' : 10, 'Subscriber$User busy' : 11, 'Network$Message not compatible with call state' : 12, 'Subscriber$Destination out of order' : 13, 'Network$Recovery on timer expiry' : 14, 'Network$Service or option not implemented,  unspecified' : 15, 'Subscriber$T.301 expired :  � User Alerted,  No answer from user' : 16, 'Network$Service or option not available,  unspecified' : 17, 'Subscriber$Invalid number format or incomplete address' : 18, 'Subscriber$Number changed to number in diagnostic field.' : 19, 'Network$Switching equipment congestion' : 20, 'Network$Protocol error,  unspecified' : 21, 'Subscriber$Subscriber absent' : 22, 'Network$Resource unavailable,  unspecified' : 23, 'Network$No route to specified transit network (Transit Network Identity)' : 24, 'Subscriber$Bearer capability not authorized' : 25, 'Network$Network out of order' : 26, 'Network$Call resumed' : 27, 'Network$Incompatible destination' : 28, 'Network$Proprietary diagnostic code (not necessarily bad). Typically used to pass proprietary control or maintenance messages between multiplexers.' : 29, 'No Error$Non-selected user clearing' : 30, 'No Error$Intermediate CDR (call not terminated)' : 31, 'Network$Misdialled trunk prefix' : 32, 'Subscriber$Requested facility not subscribed' : 33, 'Network$Bearer service not implemented' : 34, 'Network$Invalid message,  unspecified' : 35, 'Network$Requested circuit channel not available' : 36, 'Network$Precedence call blocked' : 37, 'Subscriber$Reverse charging not allowed' : 38, 'Network$Mandatory information element is missing' : 39, 'Network$Bearer capability not presently available' : 40, 'Network$Prefix 0 dialed but not allowed' : 41, 'Network$Invalid transit network selection (national use)' : 42, 'Subscriber$Incoming calls barred within CUG' : 43, 'Network$Information element nonexistent or not implemented' : 44, 'Network$Invalid information element contents' : 45, 'Network$Destination unattainable' : 46, 'Network$Invalid call reference value' : 47, 'No Error$Call suspended' : 48, 'Network$Parameter non-existent or not implemented � passed on' : 49, 'Subscriber$EKTS facility rejected by network' : 50, 'Network$Requested facility not implemented' : 51}
+statuses = {'Subscriber$No user responding':1,'No Error$Normal call clearing':2,'Network$No circuit/channel available':3,'Network$Temporary failure':4,'No Error$Send special information tone':5,'Subscriber$Unallocated or unassigned number':6,'Network$Internetworking, unspecified':7,'Network$No route to destination':8,'No Error$Normal, unspecified':9,'Subscriber$Call rejected':10,'Subscriber$User busy':11,'Network$Message not compatible with call state':12,'Subscriber$Destination out of order':13,'Network$Recovery on timer expiry':14,'Network$Service or option not implemented, unspecified':15,'Subscriber$T.301 expired: � User Alerted, No answer from user':16,'Network$Service or option not available, unspecified':17,'Subscriber$Invalid number format or incomplete address':18,'Subscriber$Number changed to number in diagnostic field.':19,'Network$Switching equipment congestion':20,'Network$Protocol error, unspecified':21,'Subscriber$Subscriber absent':22,'Network$Resource unavailable, unspecified':23,'Network$No route to specified transit network (Transit Network Identity)':24,'Subscriber$Bearer capability not authorized':25,'Network$Network out of order':26,'Network$Call resumed':27,'Network$Incompatible destination':28,'Network$Proprietary diagnostic code (not necessarily bad). Typically used to pass proprietary control or maintenance messages between multiplexers.':29,'No Error$Non-selected user clearing':30,'No Error$Intermediate CDR (call not terminated)':31,'Network$Misdialled trunk prefix':32,'Subscriber$Requested facility not subscribed':33,'Network$Bearer service not implemented':34,'Network$Invalid message, unspecified':35,'Network$Requested circuit channel not available':36,'Network$Precedence call blocked':37,'Subscriber$Reverse charging not allowed':38,'Network$Mandatory information element is missing':39,'Network$Bearer capability not presently available':40,'Network$Prefix 0 dialed but not allowed':41,'Network$Invalid transit network selection (national use)':42,'Subscriber$Incoming calls barred within CUG':43,'Network$Information element nonexistent or not implemented':44,'Network$Invalid information element contents':45,'Network$Destination unattainable':46,'Network$Invalid call reference value':47,'No Error$Call suspended':48,'Network$Parameter non-existent or not implemented � passed on':49,'Subscriber$EKTS facility rejected by network':50,'Network$Requested facility not implemented':51}
 
 for row in numbers_csv:
     print(row)
@@ -92,17 +92,17 @@ traffic_csv = csv.DictReader(traffic_file, delimiter = ',')
 matches = 0
 mismatches = 0
 for row in traffic_csv:
-    print(row)
+    # print(row)
     line_count += 1
     phone_call = PhoneCall()
     phone_call['hash'] = row['CALL_ID']
     hash_a = row['A_NUMBER']
-    print(hash_a)
+    # print(hash_a)
     if hash_a not in hashes_to_id:
         cur_id += 1
         hashes_to_id[hash_a] = cur_id
         id_to_hashes[cur_id] = hash_a
-    print(hashes_to_id[hash_a])
+    # print(hashes_to_id[hash_a])
     phone_call['a_unknown'] = 0 if dataset.contains(hashes_to_id[hash_a]) else 1
     phone_call['id_a'] = hashes_to_id[hash_a]
     hash_b = row['B_NUMBER']
@@ -123,7 +123,7 @@ for row in traffic_csv:
     phone_call['recv_op_country'] = one_hot_vec(countries_num, country_to_id[row['RECV_OPER_CTRY']])
     phone_call['dest_op_country'] = one_hot_vec(countries_num, country_to_id[row['DEST_OPER_CTRY']])
     row_tocs = row['TRANSM_OPER_COMMERCIAL_SEGMENT']
-    phone_call['tocs'] = one_hot_vec(4, tocses[row_tocs])
+    phone_call['tocs'] = one_hot_vec(5, tocses[row_tocs])
     timestamp = row['CALL_DATETIME']
     phone_call['datetime'] = datetime.strptime(timestamp, ts_format)
     phone_call['call_duration'] = int(row['CALL_DURATION'])

@@ -1,16 +1,16 @@
 class PhoneCall():
     allowed_keys = [
         'hash', # string
-        'id_a' # int, id ko je pozvao uvek
-        'a_unknown' # int 0/1
+        'id_a', # int, id ko je pozvao uvek
+        'a_unknown', # int 0/1
         'id_b', # int, id ko je pozvan uvek
-        'b_unknown' # int 0.1
+        'b_unknown', # int 0.1
         'datetime', # datetime
         'orig_op_country', # one-hot vec drzave (isti!)
         'transm_op_country', # one-hot vec drzave (isti!)
         'recv_op_country', # one-hot vec drzave (isti!)
         'dest_op_country', # one-hot vec drzave (isti!)
-        'tocs', # one-hot vec duzine 4? (FMNO, wholesale, EasyConnect, DSP)
+        'tocs', # one-hot vec duzine 5? (FMNO, wholesale, EasyConnect, DSP, Unknown)
         'roaming', # int 0/1 da li je roaming: FMNO && orig_op != transm_op
         'call_duration', # int (sekunde)
         'setup_duration', # int (sekunde)
@@ -28,7 +28,7 @@ class PhoneCall():
 
     def __setitem__(self, key, val):
         if key not in PhoneCall.allowed_keys:
-            raise RuntimeError('Key {} not allowed in PhoneNumber!'.format(key))
+            raise RuntimeError('Key {} not allowed in PhoneCall!'.format(key))
         self.features[key] = val
 
     def __str__(self):
