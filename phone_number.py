@@ -4,8 +4,8 @@ class PhoneNumber():
     allowed_keys = [
         'hash', # str
         'id', # int
-        'country', # one-hot vec duzine ?
-        'type', # one-hot vec duzine 6?: mob, fix, tech, ott, prem, tollfree
+        'country', # one-hot vec duzine 200+
+        'type', # one-hot vec duzine 7: mob, fix, tech, ott, prem, tollfree, unknown
         'blacklist', # int 0/1
         'a2p', # int 0/1
         'ts_out', # array of PhoneCall when I called, sorted by datetime
