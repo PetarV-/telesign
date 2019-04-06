@@ -98,7 +98,7 @@ class TSNEReductor():
         # print(len(x_axis_black_listed))
 
         # Plot.
-        plt.scatter(x_axis_data, y_axis_data, color='r', label='Remaining data')
+        plt.scatter(x_axis_norm, y_axis_norm, color='r', label='Remaining data')
 
         plt.scatter(x_axis_bl, y_axis_bl, color='k', label='Black listed')
 
