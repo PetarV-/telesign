@@ -4,7 +4,7 @@ class FeatureExtractor():
 
 	def _get_mean(self, key, use_only_successful):
 		arr = []
-		for phone_call in phone_call:
+		for phone_call in phone_calls:
 			if use_only_successful:
 				if phone_call['status_cat'][2] == 1:
 					arr.add(phone_call[key])
@@ -15,7 +15,7 @@ class FeatureExtractor():
 
 	def _get_var(self, key, use_only_successful):
 		arr = []
-		for phone_call in phone_call:
+		for phone_call in phone_calls:
 			if use_only_successful:
 				if phone_call['status_cat'][2] == 1:
 					arr.add(phone_call[key])
@@ -31,7 +31,7 @@ class FeatureExtractor():
 
 		return np.maximum(arr)
 
-	def get_feature_vec(self, phone_calls):
+	def get_feature_vec(self, phone_calls, is_a):
 		self.phone_calls = phone_calls
 		feature_vec = []
 		
@@ -57,8 +57,14 @@ class FeatureExtractor():
 		# Phone calls num.
 		feature_vec.add(len(phone_calls))
 
-		# Called phone numbers.
-		called_phones = set()
-		for po
+		# Unique phone numbers.
+		unique_phones = set()
+		for phone_call in phone_calls:
+			if is_a:
+				unique_phones.add(phone_call['id_a'])
+			else:
+				unique_phones.add(phone_call['id_b'])
+
+		feature_vec.add(len(unique_phones))
 
 		return feature_vec
