@@ -3,7 +3,6 @@ import numpy as np
 from phone_number import PhoneNumber
 from phone_call import PhoneCall 
 from features import FeatureExtractor
-from preprocess import one_hot_vec
 
 # total number of phones in the dataset
 NB_PHONES = 9873
@@ -13,6 +12,11 @@ NB_FEATURES = 150
 NB_COUNTRIES = 266
 
 xtract = FeatureExtractor()
+
+def one_hot_vec(num_elements, which):
+    ret = [0] * num_elements
+    ret[which - 1] = 1
+    return ret
 
 def to_array(dataset):
     ret = np.empty((NB_PHONES, NB_FEATURES))

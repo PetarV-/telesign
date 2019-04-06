@@ -69,7 +69,7 @@ class FeatureExtractor():
         tocs_vec = np.zeros(NB_TOCS)
         if len(phone_calls) > 0:
             for phone_call in phone_calls:
-                tocs_vec[phone_call['tocs'] - 1] += 1.0
+                tocs_vec += phone_call['tocs']
 
             tocs_vec /= np.sum(tocs_vec)
 
