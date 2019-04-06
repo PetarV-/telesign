@@ -1,14 +1,14 @@
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 
-class PCAReductor():
+class TSNEReductor():
 
     def __init__(self, n_components, bl_position=273):
         self.bl_position = bl_position
         self.n_components = n_components
-        self.pca = PCA(n_components)
+        self.tsne = TSNE(n_components)
 
     def perform(self, X):
         # Remember all black listed.
@@ -21,7 +21,7 @@ class PCAReductor():
                 self.bl_mask[i] = False
 
         # Dimensionality reduction.
-        self.X = self.pca.fit_transform(X)
+        self.X = self.tsne.fit_transform(X)
 
     def plot_data(self):
         if self.X is None:
