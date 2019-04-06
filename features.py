@@ -1,11 +1,31 @@
 import numpy as np
+from datetime import datetime
 
 # total number of phones in the dataset
 NB_PHONES = 9872
 # total number of countries in the dataset
-NB_COUNTRIES = 266 
+NB_COUNTRIES = 266
 # number of TOCs
 NB_TOCS = 5
+
+def vladamg98_metric(arr):
+    if len(arr) == 1:
+        return 0
+    last = arr[0]
+    d = []
+    for i in range(1, len(arr)):
+        d.append(arr[i] - last)
+        last = arr[i]
+    sm = 0
+    for x in d:
+        sm += x
+    mean = sm / len(d)
+    cnt_small = 0
+    for x in d:
+        if x < mean:
+            cnt_small += 1
+    return cnt_small / len(d)
+
 
 class FeatureExtractor():
 
@@ -120,3 +140,19 @@ class FeatureExtractor():
 
         return adj_vec
 
+    def get_timestamp_features(self, phone_calls):
+        #print(len(phone_calls))
+        if len(phone_calls) == 0:
+            return [0, 0, 0]
+        #print(phone_calls)
+        timestamps_in = []
+        epoch = datetime.utcfromtimestamp(0)
+        for phone_call in phone_calls:
+            timestamps_in.append((phone_call['datetime'] - epoch).total_seconds())
+        #print(timestamps_in)
+        np_timestamps = np.asarray(timestamps_in)
+        ret = []
+        ret.append(np.mean(np_timestamps))
+        ret.append(np.median(np_timestamps))
+        ret.append(vladamg98_metric(timestamps_in))
+        return ret
