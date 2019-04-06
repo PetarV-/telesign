@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import time
+import pickle
 import numpy as np
 
 # TODO: Sigmoid/Tanh and log loss instead of MSE
@@ -11,6 +12,8 @@ class Autoencoder(nn.Module):
         super(Autoencoder, self).__init__()
 
         nb_mid_features = (nb_in_features + nb_latent_features) // 2
+
+        self.batch_norm = nn.BatchNorm1d(nb_in_features)
 
         self.encoder = nn.Sequential(
             nn.Linear(nb_in_features, nb_mid_features),
@@ -25,9 +28,10 @@ class Autoencoder(nn.Module):
         )
     
     def forward(self, X):
-        X = self.encoder(X) 
-        X = self.decoder(X)
-        return X
+        X_norm = self.batch_norm(X)
+        L = self.encoder(X_norm) 
+        rec = self.decoder(L)
+        return (X_norm, L, rec)
 
 class SimpleDataset(Dataset):
     def __init__(self, X):
@@ -54,7 +58,7 @@ class AutoencoderDriver:
         self.loss_function = nn.MSELoss()
         self.optimizer = torch.optim.Adam(
             self.autoencoder.parameters(), 
-            lr=1e-3, 
+            lr=1e-4, 
             weight_decay=1e-5)
 
         print(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
@@ -65,7 +69,6 @@ class AutoencoderDriver:
         assert(X.shape[1] == self.nb_in_features)
 
         dataset = SimpleDataset(X)
-        loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
 
         # Train
         print("Training")
@@ -73,23 +76,40 @@ class AutoencoderDriver:
         for epoch in range(self.nb_epochs):
             epoch_loss = 0
             t_start = time.time()
+            loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)  
             for batch in loader:
                 batch = batch.cuda()
                 self.optimizer.zero_grad()
-                outputs = self.autoencoder(batch)
-                loss = self.loss_function(outputs, batch)
+                X_norm, _, rec = self.autoencoder(batch)
+                #print(X.shape)
+                #print(L.shape)
+                #print(rec.shape)
+                loss = self.loss_function(X_norm, rec)
                 loss.backward()
                 self.optimizer.step()
                 epoch_loss += loss.item()
             t_end = time.time()
             nb_batches = len(loader)
-            if epoch < 10 or epoch % 10 == 9:
+            if True:
                 print('Epoch: {:04d}/{:04d}'.format(epoch+1, self.nb_epochs),
                       '|Loss: {:.6f}'.format(epoch_loss / nb_batches),
                       '|Time: {:.2f}s'.format(t_end - t_start))
 
+        self.autoencoder.eval()
+
         # Test?
-        ex = torch.tensor(np.reshape(dataset[0], (1, -1)))
-        ex = ex.cuda()
-        print(ex)
-        print(self.autoencoder(ex))
+        #ex = torch.tensor(np.reshape(dataset[0], (1, -1)))
+        #ex = ex.cuda()
+        #print(ex)
+        #print(self.autoencoder(ex))
+
+        # Dump
+        x_torch = torch.tensor(X) 
+        x_torch = x_torch.cuda()
+        _, L_torch, _ = self.autoencoder(x_torch)
+        L = L_torch.data.cpu().numpy()
+        print(X.shape, ' ---> ', L.shape)
+        print(L)
+
+        with open('latent-norm.pkl', 'wb') as lt:
+            pickle.dump(L, lt)

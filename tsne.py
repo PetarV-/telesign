@@ -24,23 +24,26 @@ class TSNEReductor():
         self.n_components = n_components
         self.tsne = TSNE(n_components)
 
-    def perform(self, X):
-        # Remember all important.
-        self.bl_mask = np.zeros((X.shape[0]), dtype=bool)
+    # prvo je na sta primeniti TSNE, drugo su originalni podaci (optional)
+    def perform(self, X, X_orig=None):
+        if X_orig is None:
+            X_orig = X
+        # Remember all black listed.
+        self.bl_mask = np.zeros((X_orig.shape[0]), dtype=bool)
 
-        self.ezy_mask = np.zeros((X.shape[0]), dtype=bool)
-        self.dsp_mask = np.zeros((X.shape[0]), dtype=bool)
+        self.ezy_mask = np.zeros((X_orig.shape[0]), dtype=bool)
+        self.dsp_mask = np.zeros((X_orig.shape[0]), dtype=bool)
 
-        self.mob_mask = np.zeros((X.shape[0]), dtype=bool)
-        self.fix_mask = np.zeros((X.shape[0]), dtype=bool)
-        self.tch_mask = np.zeros((X.shape[0]), dtype=bool)
-        self.ott_mask = np.zeros((X.shape[0]), dtype=bool)
-        self.prm_mask = np.zeros((X.shape[0]), dtype=bool)
-        self.tlf_mask = np.zeros((X.shape[0]), dtype=bool)
+        self.mob_mask = np.zeros((X_orig.shape[0]), dtype=bool)
+        self.fix_mask = np.zeros((X_orig.shape[0]), dtype=bool)
+        self.tch_mask = np.zeros((X_orig.shape[0]), dtype=bool)
+        self.ott_mask = np.zeros((X_orig.shape[0]), dtype=bool)
+        self.prm_mask = np.zeros((X_orig.shape[0]), dtype=bool)
+        self.tlf_mask = np.zeros((X_orig.shape[0]), dtype=bool)
         
-        self.norm_mask = np.zeros((X.shape[0]), dtype=bool)
-        for i in range(X.shape[0]):
-            sample = X[i]
+        self.norm_mask = np.zeros((X_orig.shape[0]), dtype=bool)
+        for i in range(X_orig.shape[0]):
+            sample = X_orig[i]
             if sample[self.bl_position]:
                 self.bl_mask[i] = True
             elif sample[self.ezy_position] > 0.1:
@@ -63,54 +66,54 @@ class TSNEReductor():
                 self.norm_mask[i] = True
 
         # Dimensionality reduction.
-        self.X = self.tsne.fit_transform(X)
+        self.X_tsne = self.tsne.fit_transform(X)
 
     def plot_data(self):
-        if self.X is None:
+        if self.X_tsne is None:
             raise RuntimeError('There is no data to plot.')
 
         if self.n_components != 2:
             raise RuntimeError('Cannot plot if n_components is not 2.')
 
-        # Coordinates for blacklisted.
-        x_axis_bl = self.X[self.bl_mask,0]
-        y_axis_bl = self.X[self.bl_mask,1]
 
-        # Coordinates for all other important.
-        x_axis_mob = self.X[self.mob_mask,0]
-        y_axis_mob = self.X[self.mob_mask,1]
+        # Coordinates for all data.
+        # Coordinates for black listed.
+        x_axis_bl = self.X_tsne[self.bl_mask,0]
+        y_axis_bl = self.X_tsne[self.bl_mask,1]
 
-        x_axis_fix = self.X[self.fix_mask,0]
-        y_axis_fix = self.X[self.fix_mask,1]
+        x_axis_mob = self.X_tsne[self.mob_mask,0]
+        y_axis_mob = self.X_tsne[self.mob_mask,1]
 
-        x_axis_tch = self.X[self.tch_mask,0]
-        y_axis_tch = self.X[self.tch_mask,1]
+        x_axis_fix = self.X_tsne[self.fix_mask,0]
+        y_axis_fix = self.X_tsne[self.fix_mask,1]
 
-        x_axis_ott = self.X[self.ott_mask,0]
-        y_axis_ott = self.X[self.ott_mask,1]
+        x_axis_tch = self.X_tsne[self.tch_mask,0]
+        y_axis_tch = self.X_tsne[self.tch_mask,1]
 
-        x_axis_prm = self.X[self.prm_mask,0]
-        y_axis_prm = self.X[self.prm_mask,1]
+        x_axis_tlf = self.X_tsne[self.tlf_mask,0]
+        y_axis_tlf = self.X_tsne[self.tlf_mask,1]
 
-        x_axis_tlf = self.X[self.tlf_mask,0]
-        y_axis_tlf = self.X[self.tlf_mask,1]
+        x_axis_ott = self.X_tsne[self.ott_mask,0]
+        y_axis_ott = self.X_tsne[self.ott_mask,1]
+
+        x_axis_prm = self.X_tsne[self.prm_mask,0]
+        y_axis_prm = self.X_tsne[self.prm_mask,1]
 
         # Coordinates for remaining data.
-        x_axis_norm = self.X[self.norm_mask,0]
-        y_axis_norm = self.X[self.norm_mask,1]
+        x_axis_norm = self.X_tsne[self.norm_mask,0]
+        y_axis_norm = self.X_tsne[self.norm_mask,1]
 
-        x_axis_ezy = self.X[self.ezy_mask,0]
-        y_axis_ezy = self.X[self.ezy_mask,1]
+        x_axis_ezy = self.X_tsne[self.ezy_mask,0]
+        y_axis_ezy = self.X_tsne[self.ezy_mask,1]
 
-        x_axis_dsp = self.X[self.dsp_mask,0]
-        y_axis_dsp = self.X[self.dsp_mask,1]
+        x_axis_dsp = self.X_tsne[self.dsp_mask,0]
+        y_axis_dsp = self.X_tsne[self.dsp_mask,1]
 
         # print(len(x_axis_data))
         # print(len(x_axis_black_listed))
 
         # Plot.
         plt.scatter(x_axis_norm, y_axis_norm, color='r', label='Remaining data')
-
         plt.scatter(x_axis_mob, y_axis_mob, color='c', label='Mobile')
         plt.scatter(x_axis_fix, y_axis_fix, color='m', label='Fixed')
         plt.scatter(x_axis_tch, y_axis_tch, color='#E86712', label='Tech')
