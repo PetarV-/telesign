@@ -1,4 +1,6 @@
 *.csv
+img/
+*.pkl
 task_and_samples/
 
 # Byte-compiled / optimized / DLL files
