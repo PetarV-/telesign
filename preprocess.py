@@ -77,7 +77,10 @@ for row in numbers_csv:
     id_to_hashes[cur_id] = hash
     phone_call['hash'] = hash
     phone_call['id'] = cur_id
-    phone_call['country'] = one_hot_vec(countries_num, country_to_id[code_to_country[row['OPERATOR_COUNTRY_ISO2']]])
+    country_id = country_to_id[code_to_country[row['OPERATOR_COUNTRY_ISO2']]]
+    # DON'T ONE HOT COUNTRIES IN [1, 266]
+    # phone_call['country'] = one_hot_vec(countries_num, country_id)
+    phone_call['country'] = country_id
     n_type = row['NUMBER_TYPE']
     phone_type = one_hot_vec(7, number_types[n_type])
     phone_call['type'] = phone_type
@@ -123,11 +126,14 @@ for row in traffic_csv:
         id_to_hashes[cur_id] = hash_b
     phone_call['b_unknown'] = 0 if dataset.contains(hashes_to_id[hash_b]) else 1
     phone_call['id_b'] = hashes_to_id[hash_b]
-    orig_country = country_to_id[row['ORIG_OPER_CTRY']]
-    phone_call['orig_op_country'] = one_hot_vec(countries_num, orig_country)
-    phone_call['transm_op_country'] = one_hot_vec(countries_num, country_to_id[row['TRANSM_OPER_CTRY']])
-    phone_call['recv_op_country'] = one_hot_vec(countries_num, country_to_id[row['RECV_OPER_CTRY']])
-    phone_call['dest_op_country'] = one_hot_vec(countries_num, country_to_id[row['DEST_OPER_CTRY']])
+
+    # DON'T ONE HOT COUNTRIES IN [1, 266]
+    # one_hot_vec(countries_num, orig/transm/recv/dest_country)
+    phone_call['orig_op_country'] = country_to_id[row['ORIG_OPER_CTRY']]
+    phone_call['transm_op_country'] = country_to_id[row['TRANSM_OPER_CTRY']]
+    phone_call['recv_op_country'] = country_to_id[row['RECV_OPER_CTRY']]
+    phone_call['dest_op_country'] = country_to_id[row['DEST_OPER_CTRY']]
+
     row_tocs = row['TRANSM_OPER_COMMERCIAL_SEGMENT']
     phone_call['tocs'] = one_hot_vec(5, tocses[row_tocs])
     timestamp = row['CALL_DATETIME']
@@ -140,9 +146,10 @@ for row in traffic_csv:
     phone_call['release_dir'] = one_hot_vec(3, releases[row['RELEASE_DIRECTION_DESCRIPTION']])
 
     # roaming
+    # DON'T ONE HOT COUNTRIES IN [1, 266]
     orig_country = phone_call['orig_op_country']
     if not phone_call['a_unknown']:
-        orig_country = hot_one(dataset[phone_call['id_a']]['country'])
+        orig_country = dataset[phone_call['id_a']]['country']
     phone_call['roaming'] = 1 if row_tocs == 'F/MNO' and orig_country != phone_call['transm_op_country'] else 0
     
     # skippity skip (REMOVE)
