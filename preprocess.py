@@ -70,23 +70,23 @@ statuses = {'Subscriber$No user responding':1,'No Error$Normal call clearing':2,
 for row in numbers_csv:
     #print(row)
     line_count += 1
-    phone_call = PhoneNumber()
+    phone_number = PhoneNumber()
     cur_id += 1
     hash = row['PHONE_NUMBER']
     hashes_to_id[hash] = cur_id
     id_to_hashes[cur_id] = hash
-    phone_call['hash'] = hash
-    phone_call['id'] = cur_id
+    phone_number['hash'] = hash
+    phone_number['id'] = cur_id
     country_id = country_to_id[code_to_country[row['OPERATOR_COUNTRY_ISO2']]]
     # DON'T ONE HOT COUNTRIES IN [1, 266]
-    # phone_call['country'] = one_hot_vec(countries_num, country_id)
-    phone_call['country'] = country_id
+    # phone_number['country'] = one_hot_vec(countries_num, country_id)
+    phone_number['country'] = country_id
     n_type = row['NUMBER_TYPE']
     phone_type = one_hot_vec(7, number_types[n_type])
-    phone_call['type'] = phone_type
-    phone_call['blacklist'] = 0 if row['BLACK_LIST_FLAG'] == 'FALSE' else 1
-    phone_call['a2p'] = int(row['A2P_SMS_FLAG'])
-    dataset[cur_id] = phone_call
+    phone_number['type'] = phone_type
+    phone_number['blacklist'] = 0 if row['BLACK_LIST_FLAG'] == 'FALSE' else 1
+    phone_number['a2p'] = int(row['A2P_SMS_FLAG'])
+    dataset[cur_id] = phone_number
 
 print("Phone numbers done")
 
