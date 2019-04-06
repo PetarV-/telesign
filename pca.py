@@ -3,6 +3,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
+sns.set()
+
 class PCAReductor():
 
     def __init__(self, n_components, bl_position=273):
@@ -39,7 +41,7 @@ class PCAReductor():
         y_axis_black_listed = self.X[self.bl_mask,1] 
 
         # Plot.
-        plt.scatter(x_axis_data, y_axis_data, color='r', edgecolors='k', label='All data')
-        plt.scatter(x_axis_black_listed, y_axis_black_listed, color='k', edgecolors='k', label='Black listed')
+        plt.scatter(x_axis_data, y_axis_data, color='r', label='Not blacklisted')
+        plt.scatter(x_axis_black_listed, y_axis_black_listed, color='k', edgecolors='k', label='Blacklisted')
         plt.legend()
         plt.show()

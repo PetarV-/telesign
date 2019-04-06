@@ -2,6 +2,7 @@ import pickle
 import numpy
 
 from tsne import TSNEReductor
+from pca import PCAReductor
 
 with open('fts.pkl', 'rb') as features_file:
     features = pickle.load(features_file)
@@ -13,7 +14,7 @@ with open('fts.pkl', 'rb') as features_file:
         std = numpy.std(column)
         features[:, col] = (column - mean) / std
 
-ts = TSNEReductor(2)
+ts = TSNEReductor(2, bl_position=273)
 
 ts.perform(features)
 ts.plot_data()
