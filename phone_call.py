@@ -22,17 +22,17 @@ class PhoneCall():
 
     def __init__(self):
         self.features = dict()
-    
+
     def __getitem__(self, key):
         return self.features[key]
-    
+
     def __setitem__(self, key, val):
-        if key not in allowed_keys:
+        if key not in PhoneCall.allowed_keys:
             raise RuntimeError('Key {} not allowed in PhoneNumber!'.format(key))
         self.features[key] = val
-    
+
     def __str__(self):
         return str(self.features)
-    
+
     def __len__(self):
         return len(self.features)
