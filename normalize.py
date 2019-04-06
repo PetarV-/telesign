@@ -16,6 +16,13 @@ with open('fts.pkl', 'rb') as features_file:
 
 ts = TSNEReductor(2, bl_position=273)
 
-ts.perform(features)
-ts.plot_data()
+with open('latent-norm.pkl', 'rb') as latent_file:
+    latent = pickle.load(latent_file)
+    #for col in range(latent.shape[1]):
+    #    column = latent[:, col]
+    #    mean = numpy.mean(column)
+    #    std = numpy.std(column)
+    #    latent[:, col] = (column - mean) / std
+    ts.perform(latent, features)
+    ts.plot_data()
 
