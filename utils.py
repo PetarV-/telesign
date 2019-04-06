@@ -3,23 +3,25 @@ import numpy as np
 from phone_number import PhoneNumber
 from phone_call import PhoneCall 
 from features import FeatureExtractor
+from preprocess import one_hot_vec
 
 # total number of phones in the dataset
 NB_PHONES = 9873
 # total number of features we use
 NB_FEATURES = 150
+# total number of countries
+NB_COUNTRIES = 266
 
 xtract = FeatureExtractor()
 
 def to_array(dataset):
-    assert(dataset[0] == None)
-    ret = np.empty(NB_PHONES, NB_FEATURES)
-    adj = np.zeros(NB_PHONES, NB_PHONES)
+    ret = np.empty((NB_PHONES, NB_FEATURES))
+    adj = np.zeros((NB_PHONES, NB_PHONES))
     for i in range(NB_PHONES):
         cur_phone = dataset[i + 1]
         ft_vec = []
         # 1. country
-        ft_vec.extend(cur_phone['country'])
+        ft_vec.extend(one_hot_vec(NB_COUNTRIES, cur_phone['country']))
         # 2. type
         ft_vec.extend(cur_phone['type'])
         # 3. blacklist
