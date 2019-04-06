@@ -15,9 +15,9 @@ class PhoneCall():
         'call_duration', # int (sekunde)
         'setup_duration', # int (sekunde)
         'answered', # int 0/1
-        'status_cat', # one-hot vec duzine 3? (network error, sub action, no error)
-        'status_name', # string??? videti koji su pa mozda one-hot !!!
-        'release_dir' # string??? moze realno da bude one-hot !!!
+        'status_cat', # one-hot vec duzine 3 (network error, sub action, no error)
+        'status_name', # one-hot vec len=51 (cat$name) (status_name_mappings.txt)
+        'release_dir' # one-hot vec duzine 3 (A prekinuo, oba, B prekinuo)
     ]
 
     def __init__(self):
