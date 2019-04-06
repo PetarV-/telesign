@@ -1,7 +1,10 @@
 class PhoneCall():
     allowed_keys = [
         'hash', # string
-        'id_called', # int, id onoga koga smo pozvali
+        'id_a' # int, id ko je pozvao uvek
+        'a_unknown' # int 0/1
+        'id_b', # int, id ko je pozvan uvek
+        'b_unknown' # int 0.1
         'datetime', # datetime
         'orig_op_country', # one-hot vec drzave (isti!)
         'transm_op_country', # one-hot vec drzave (isti!)
