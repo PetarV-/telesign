@@ -14,6 +14,7 @@ xtract = FeatureExtractor()
 def to_array(dataset):
     assert(dataset[0] == None)
     ret = np.empty(NB_PHONES, NB_FEATURES)
+    adj = np.zeros(NB_PHONES, NB_PHONES)
     for i in range(NB_PHONES):
         cur_phone = dataset[i + 1]
         ft_vec = []
@@ -31,6 +32,7 @@ def to_array(dataset):
         ft_vec.extend(xtract.get_feature_vec(cur_phone['ts_in'], False))
 
         ret[i] = ft_vec
+        adj[i] = xtract.get_adj_vec(cur_phone['ts_in'], cur_phone['ts_out'], i)
 
-    return ret
+    return ret, adj
 
