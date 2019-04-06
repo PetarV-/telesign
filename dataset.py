@@ -18,3 +18,6 @@ class Dataset():
 
     def contains(self, item):
         return item in self.nums
+
+    def values(self):
+        return self.nums.values()

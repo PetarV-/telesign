@@ -1,5 +1,8 @@
 import numpy as np
 
+# total number of phones in the dataset
+NB_PHONES = 9873
+
 class FeatureExtractor():
 
     def _get_mean(self, key, use_only_successful):
@@ -68,3 +71,16 @@ class FeatureExtractor():
         feature_vec.add(len(unique_phones))
 
         return feature_vec
+
+    def get_adj_vec(self, calls_in, calls_out, my_id):
+        adj_vec = np.zeros(NB_PHONES)
+        adj_vec[my_id] = 1.0
+
+        for phone_call in calls_in:
+            adj_vec[phone_call['id_a']] = 1.0
+        # comment out for directed graph
+        for phone_call in calls_out:
+            adj_vec[phone_call['id_b']] = 1.0
+
+        return adj_vec
+
