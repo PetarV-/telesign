@@ -1,9 +1,11 @@
 import numpy as np
 import csv
 from datetime import datetime
+
 from dataset import Dataset
 from phone_call import PhoneCall
 from phone_number import PhoneNumber
+from utils import to_array
 
 ts_format = '%Y-%m-%dT%H:%M:%S.%fZ'
 #The following part should create mappings between country codes and country names
@@ -173,6 +175,8 @@ for p in dataset.values():
     p['ts_in'] = sorted(p['ts_in'], key = lambda x : x['datetime'])
 
 print("Done!")
+
+ret, adj = to_array(dataset)
 
 # We have the dataset!
 import code

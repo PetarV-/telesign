@@ -2,6 +2,10 @@ import numpy as np
 
 # total number of phones in the dataset
 NB_PHONES = 9873
+# total number of countries in the dataset
+NB_COUNTRIES = 266 
+# number of TOCs
+NB_TOCS = 5
 
 class FeatureExtractor():
 
@@ -29,7 +33,7 @@ class FeatureExtractor():
 
     def _get_max(self, key):
         arr = []
-        for phone_call in phone_call:
+        for phone_call in phone_calls:
             arr.append(phone_call[key])
 
         return np.maximum(arr)
@@ -37,15 +41,39 @@ class FeatureExtractor():
     def get_feature_vec(self, phone_calls, is_a):
         self.phone_calls = phone_calls
         feature_vec = []
-        
+
         # Countries.
-        feature_vec.append(_get_max('orig_op_country'))
-        feature_vec.append(_get_max('transm_op_country'))
-        feature_vec.append(_get_max('recv_op_country'))
-        feature_vec.append(_get_max('dest_op_country'))
+        cty_vec_or = np.zeros(NB_COUNTRIES)
+        cty_vec_tr = np.zeros(NB_COUNTRIES)
+        cty_vec_rc = np.zeros(NB_COUNTRIES)
+        cty_vec_ds = np.zeros(NB_COUNTRIES)
+
+        if len(phone_calls) > 0:
+            for phone_call in phone_calls:
+                cty_vec_or[phone_call['orig_op_country'] - 1] += 1.0
+                cty_vec_tr[phone_call['transm_op_country'] - 1] += 1.0
+                cty_vec_rc[phone_call['recv_op_country'] - 1] += 1.0
+                cty_vec_ds[phone_call['dest_op_country'] - 1] += 1.0
+
+            cty_vec_or /= np.sum(cty_vec_or)
+            cty_vec_tr /= np.sum(cty_vec_tr)
+            cty_vec_rc /= np.sum(cty_vec_rc)
+            cty_vec_ds /= np.sum(cty_vec_ds)
+
+        feature_vec.extend(cty_vec_or)
+        feature_vec.extend(cty_vec_tr)
+        feature_vec.extend(cty_vec_rc)
+        feature_vec.extend(cty_vec_ds)
 
         # Type of transmitting operator.
-        feature_vec.append(_get_max('tocs'))
+        tocs_vec = np.zeros(NB_TOCS)
+        if len(phone_calls) > 0:
+            for phone_call in phone_calls:
+                tocs_vec[phone_call['tocs'] - 1] += 1.0
+
+            tocs_vec /= np.sum(tocs_vec)
+
+        feature_vec.extend(tocs_vec)
 
         # Call duration and setup duration.
         feature_vec.append(_get_mean('call_duration', True))
@@ -55,7 +83,7 @@ class FeatureExtractor():
 
         # Answered calls.
         feature_vec.append(_get_mean('answered', True))
-        feature_vec.append(_get_var('answered', True))
+        # feature_vec.append(_get_var('answered', True))
 
         # Phone calls num.
         feature_vec.append(len(phone_calls))
