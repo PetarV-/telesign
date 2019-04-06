@@ -5,7 +5,7 @@ from sklearn.decomposition import PCA
 
 class PCAReductor():
 
-    def __init__(self, n_components, bl_position):
+    def __init__(self, n_components, bl_position=273):
         self.bl_position = bl_position
         self.n_components = n_components
         self.pca = PCA(n_components)

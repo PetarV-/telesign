@@ -7,6 +7,8 @@ from phone_call import PhoneCall
 from phone_number import PhoneNumber
 from utils import to_array
 
+import pickle
+
 ts_format = '%Y-%m-%dT%H:%M:%S.%fZ'
 #The following part should create mappings between country codes and country names
 
@@ -177,6 +179,11 @@ for p in dataset.values():
 print("Done!")
 
 ret, adj = to_array(dataset)
+
+with open('fts.pkl', 'wb') as pf:
+    pickle.dump(ret, pf)
+with open('adj.pkl', 'wb') as pf:
+    pickle.dump(adj, pf)
 
 # We have the dataset!
 import code
