@@ -1,13 +1,15 @@
 class PhoneNumber():
+
+    # top level je samo array of phone numbers
     allowed_keys = [
-        'id', # int
         'hash', # str
+        'id', # int
         'country', # one-hot vec duzine ?
         'type', # one-hot vec duzine 6?: mob, fix, tech, ott, prem, tollfree
         'blacklist', # int 0/1
         'a2p', # int 0/1
-        'ts_out', # array of PhoneCall when I called
-        'ts_in' # array of PhoneCall when I was called
+        'ts_out', # array of PhoneCall when I called, sorted by datetime
+        'ts_in' # array of PhoneCall when I was called, sorted by datetime
     ]
 
     def __init__(self):
