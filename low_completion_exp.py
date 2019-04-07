@@ -70,6 +70,9 @@ status_cats = {'Network' : 1, 'Subscriber' : 2, 'No Error' : 3}
 releases = {'Calling party released the call first.' : 1, 'Both parties released the call at the same time.' : 2, 'Called party released the call first.' : 3}
 statuses = {'Subscriber$No user responding':1,'No Error$Normal call clearing':2,'Network$No circuit/channel available':3,'Network$Temporary failure':4,'No Error$Send special information tone':5,'Subscriber$Unallocated or unassigned number':6,'Network$Internetworking, unspecified':7,'Network$No route to destination':8,'No Error$Normal, unspecified':9,'Subscriber$Call rejected':10,'Subscriber$User busy':11,'Network$Message not compatible with call state':12,'Subscriber$Destination out of order':13,'Network$Recovery on timer expiry':14,'Network$Service or option not implemented, unspecified':15,'Subscriber$T.301 expired: � User Alerted, No answer from user':16,'Network$Service or option not available, unspecified':17,'Subscriber$Invalid number format or incomplete address':18,'Subscriber$Number changed to number in diagnostic field.':19,'Network$Switching equipment congestion':20,'Network$Protocol error, unspecified':21,'Subscriber$Subscriber absent':22,'Network$Resource unavailable, unspecified':23,'Network$No route to specified transit network (Transit Network Identity)':24,'Subscriber$Bearer capability not authorized':25,'Network$Network out of order':26,'Network$Call resumed':27,'Network$Incompatible destination':28,'Network$Proprietary diagnostic code (not necessarily bad). Typically used to pass proprietary control or maintenance messages between multiplexers.':29,'No Error$Non-selected user clearing':30,'No Error$Intermediate CDR (call not terminated)':31,'Network$Misdialled trunk prefix':32,'Subscriber$Requested facility not subscribed':33,'Network$Bearer service not implemented':34,'Network$Invalid message, unspecified':35,'Network$Requested circuit channel not available':36,'Network$Precedence call blocked':37,'Subscriber$Reverse charging not allowed':38,'Network$Mandatory information element is missing':39,'Network$Bearer capability not presently available':40,'Network$Prefix 0 dialed but not allowed':41,'Network$Invalid transit network selection (national use)':42,'Subscriber$Incoming calls barred within CUG':43,'Network$Information element nonexistent or not implemented':44,'Network$Invalid information element contents':45,'Network$Destination unattainable':46,'Network$Invalid call reference value':47,'No Error$Call suspended':48,'Network$Parameter non-existent or not implemented � passed on':49,'Subscriber$EKTS facility rejected by network':50,'Network$Requested facility not implemented':51}
 
+good_outcalls = dict()
+total_outcalls = dict()
+
 # ima ih 9872
 for row in numbers_csv:
     #print(row)
@@ -91,6 +94,9 @@ for row in numbers_csv:
     phone_number['blacklist'] = 0 if row['BLACK_LIST_FLAG'] == 'FALSE' else 1
     phone_number['a2p'] = int(row['A2P_SMS_FLAG'])
     dataset[cur_id] = phone_number
+    phone_number['total_outcalls'] = 0
+    phone_number['good_outcalls'] = 0
+    phone_number['outcall_ratio'] = -1
 
 print("Phone numbers done")
 
@@ -101,6 +107,7 @@ line_count = 0
 traffic_csv = csv.DictReader(traffic_file, delimiter = ',')
 
 num_phone_calls = 3441439
+
 
 # ima ih 3441439
 curr_row = 0
@@ -128,8 +135,6 @@ for row in traffic_csv:
         cur_id += 1
         hashes_to_id[hash_b] = cur_id
         id_to_hashes[cur_id] = hash_b
-    #if hashes_to_id[hash_a] > 20 and hashes_to_id[hash_b] > 20:
-    #    continue
     phone_call['b_unknown'] = 0 if dataset.contains(hashes_to_id[hash_b]) else 1
     phone_call['id_b'] = hashes_to_id[hash_b]
 
@@ -157,50 +162,77 @@ for row in traffic_csv:
     if not phone_call['a_unknown']:
         orig_country = dataset[phone_call['id_a']]['country']
     phone_call['roaming'] = 1 if row_tocs == 'F/MNO' and orig_country != phone_call['transm_op_country'] else 0
-
+    
     # skippity skip (REMOVE)
     #both = [hash_a, hash_b]
     #if '27aa6048a8af29e92bca' not in both and 'a2e3d9ecd70fae491b2f' not in both:
     #    continue
 
+
+    # OVDE PLAY
+    caller = phone_call['id_a']
+    if dataset.contains(caller):
+        dataset[caller]['total_outcalls'] += 1
+        if phone_call['answered'] and phone_call['call_duration'] > 0:
+            dataset[caller]['good_outcalls'] += 1
+
     # add to lists
-    if not phone_call['a_unknown']:
-        dataset[phone_call['id_a']]['ts_out'].append(phone_call)
-    if not phone_call['b_unknown']:
-        dataset[phone_call['id_b']]['ts_in'].append(phone_call)
+    #if not phone_call['a_unknown']:
+    #    dataset[phone_call['id_a']]['ts_out'].append(phone_call)
+    #if not phone_call['b_unknown']:
+    #    dataset[phone_call['id_b']]['ts_in'].append(phone_call)
 
 # Kada se a:country matchuje sa orig_country:
 # matches:  2479449
 # total: 2588975
 # percentage: 0.9576952268755009
 
-for p in dataset.values():
-    p['ts_out'] = sorted(p['ts_out'], key = lambda x : x['datetime'])
-    p['ts_in'] = sorted(p['ts_in'], key = lambda x : x['datetime'])
+pairs = []
+for i in range(1, 9873):
+    pairs.append((dataset[i]['good_outcalls'], dataset[i]['total_outcalls']))
 
-print("Done!")
-with open("dataset.pkl", "wb") as out_file:
-    pickle.dump(dataset, out_file)
+pairs_nonzero = []
+for g, t in pairs:
+    if t != 0:
+        pairs_nonzero.append((g, t))
 
-exit(0)
+pairs_under50 = []
+pairs_under100 = []
+pairs20 = []
+pairs30 = []
+pairs40 = []
+for g, t in pairs_nonzero:
+    if t < 50:
+        pairs_under50.append((g, t))
+    if t < 100:
+        pairs_under100.append((g, t))
+    if t >= 20:
+        pairs20.append((g, t))
+    if t >= 30:
+        pairs30.append((g, t))
+    if t >= 40:
+        pairs40.append((g, t))
 
-for ph_id in range(1, 21):
-    print('Currently printing {0} {1} {2}', ph_id, len(dataset[ph_id]['ts_out']), len(dataset[ph_id]['ts_in']))
-    #for ph_call in dataset[ph_id]['ts_out']:
-    #    print(ph_call['datetime'], end = ' ')
-    #print()
-    #for ph_call in dataset[ph_id]['ts_in']:
-    #    print(ph_call['datetime'], end = ' ')
-    #print()
 
-dataset = pickle.load(open('dataset.pkl', 'rb'))
-ret, adj = to_array(dataset)
+# 20 je dobra vrednost: ispod 0.17 856/1677/9873
+# 40:
 
-with open('fts1.pkl', 'wb') as pf:
-    pickle.dump(ret, pf)
-with open('adj1.pkl', 'wb') as pf:
-    pickle.dump(adj, pf)
+def to_ratios(neka_lista):
+    ratios = []
+    for g, t in neka_lista:
+        ratios.append(g/t)
+    return ratios
 
-# We have the dataset!
 import code
-code.interact(local = locals())
+code.interact(local=locals())
+
+low_completion = []
+for i in range(1, 9873):
+	lc = False
+	if dataset[i]['total_outcalls'] >= 20:
+		g = dataset[i]['good_outcalls']
+		t = dataset[i]['total_outcalls']
+		if (g/t) <= 0.17:
+ 			lc = True
+ 	low_completion.append(lc)
+print(len(low_completion))

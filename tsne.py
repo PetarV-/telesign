@@ -44,7 +44,7 @@ class TSNEReductor():
         self.tlf_mask = np.zeros((X_orig.shape[0]), dtype=bool)
 
         self.inc_mask = np.zeros((X_orig.shape[0]), dtype=bool)
-
+        self.sms_mask = np.zeros((X_orig.shape[0]), dtype=bool)
         self.norm_mask = np.zeros((X_orig.shape[0]), dtype=bool)
         for i in range(X_orig.shape[0]):
             sample = X_orig[i]
@@ -56,6 +56,8 @@ class TSNEReductor():
                 self.dsp_mask[i] = True
             elif sample[self.out_position] - sample[self.in_position] > 100:
                 self.inc_mask[i] = True
+            elif sample[self.sms_position]:
+                self.sms_mask[i] = True
             elif sample[self.mob_position] == 1:
                 self.mob_mask[i] = True
             elif sample[self.fix_position] == 1:
@@ -70,6 +72,13 @@ class TSNEReductor():
                 self.tlf_mask[i] = True
             else:
                 self.norm_mask[i] = True
+        
+        import pickle
+        with open('low_completion.pklmask', 'rb') as ff:
+            self.low_completion_mask = pickle.load(ff)
+        
+        #import code 
+        #code.interact(local=locals())
 
         # Dimensionality reduction.
         self.X_tsne = self.tsne.fit_transform(X)
@@ -89,6 +98,9 @@ class TSNEReductor():
 
         x_axis_inc = self.X_tsne[self.inc_mask,0]
         y_axis_inc = self.X_tsne[self.inc_mask,1]
+
+        x_axis_sms = self.X_tsne[self.sms_mask,0]
+        y_axis_sms = self.X_tsne[self.sms_mask,1]
 
         x_axis_mob = self.X_tsne[self.mob_mask,0]
         y_axis_mob = self.X_tsne[self.mob_mask,1]
@@ -118,6 +130,11 @@ class TSNEReductor():
         x_axis_dsp = self.X_tsne[self.dsp_mask,0]
         y_axis_dsp = self.X_tsne[self.dsp_mask,1]
 
+        # NOVA MASKA
+
+        x_axis_lc = self.X_tsne[self.low_completion_mask,0]
+        y_axis_lc = self.X_tsne[self.low_completion_mask,1]
+
         # print(len(x_axis_data))
         # print(len(x_axis_black_listed))
 
@@ -130,8 +147,10 @@ class TSNEReductor():
         plt.scatter(x_axis_prm, y_axis_prm, color='b', label='Premium')
         plt.scatter(x_axis_tlf, y_axis_tlf, color='g', label='Toll-free')
 
-        plt.scatter(x_axis_inc, y_axis_inc, color='#228B22', label='High incoming')
+        plt.scatter(x_axis_sms, y_axis_sms, color='#800080', label='SMS Received')
+        plt.scatter(x_axis_inc, y_axis_inc, color='#FF00FF', label='High incoming')
         plt.scatter(x_axis_dsp, y_axis_dsp, color='#000080', label='DSP')
+        plt.scatter(x_axis_lc, y_axis_lc, color='#7F7F7F', label='Low Completion')
         plt.scatter(x_axis_ezy, y_axis_ezy, color='#2F4F4F', label='EasyConnect')
         plt.scatter(x_axis_bl, y_axis_bl, color='k', label='Black listed')
 

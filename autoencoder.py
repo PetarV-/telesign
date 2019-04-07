@@ -18,7 +18,8 @@ class Autoencoder(nn.Module):
         self.encoder = nn.Sequential(
             nn.Linear(nb_in_features, nb_mid_features),
             nn.LeakyReLU(inplace=True),
-            nn.Linear(nb_mid_features, nb_latent_features)
+            nn.Linear(nb_mid_features, nb_latent_features),
+            nn.LeakyReLU(inplace=True)
         )
 
         self.decoder = nn.Sequential(
@@ -32,6 +33,10 @@ class Autoencoder(nn.Module):
         L = self.encoder(X_norm) 
         rec = self.decoder(L)
         return (X_norm, L, rec)
+
+# mean na mean (ae-norm.pkl)
+# original na batchnorm (ovo je radilo pre) (ae-batch2orig.pkl)
+# batchnorm na batchnorm (ae-batch.pkl)
 
 class SimpleDataset(Dataset):
     def __init__(self, X):
@@ -84,7 +89,7 @@ class AutoencoderDriver:
                 #print(X.shape)
                 #print(L.shape)
                 #print(rec.shape)
-                loss = self.loss_function(X_norm, rec)
+                loss = self.loss_function(batch, rec)
                 loss.backward()
                 self.optimizer.step()
                 epoch_loss += loss.item()
@@ -111,5 +116,5 @@ class AutoencoderDriver:
         print(X.shape, ' ---> ', L.shape)
         print(L)
 
-        with open('latent-norm.pkl', 'wb') as lt:
+        with open('ae-batch2orig.pkl', 'wb') as lt:
             pickle.dump(L, lt)
