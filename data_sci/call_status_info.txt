@@ -1,0 +1,64 @@
+Status.Network : 1191587 --> 0.3462 percent of all traffic.
+Status.Subscriber : 623335 --> 0.1811 percent of all traffic.
+Status.No_error : 1626517 --> 0.4726 percent of all traffic.
+
+*** STATUS : NETWORK EROR ***
+
+3 : 335243 --> 0.2813 percent of all NET traffic.
+4 : 126414 --> 0.1061 percent of all NET traffic.
+7 : 427727 --> 0.3590 percent of all NET traffic.
+8 : 183742 --> 0.1542 percent of all NET traffic.
+12 : 18576 --> 0.0156 percent of all NET traffic.
+14 : 13961 --> 0.0117 percent of all NET traffic.
+15 : 55268 --> 0.0464 percent of all NET traffic.
+17 : 1733 --> 0.0015 percent of all NET traffic.
+20 : 1249 --> 0.0010 percent of all NET traffic.
+21 : 2819 --> 0.0024 percent of all NET traffic.
+23 : 2743 --> 0.0023 percent of all NET traffic.
+24 : 11740 --> 0.0099 percent of all NET traffic.
+26 : 9013 --> 0.0076 percent of all NET traffic.
+27 : 571 --> 0.0005 percent of all NET traffic.
+28 : 345 --> 0.0003 percent of all NET traffic.
+29 : 133 --> 0.0001 percent of all NET traffic.
+32 : 63 --> 0.0001 percent of all NET traffic.
+34 : 71 --> 0.0001 percent of all NET traffic
+35 : 21 --> 0.0000 percent of all NET traffic.
+36 : 80 --> 0.0001 percent of all NET traffic.
+37 : 14 --> 0.0000 percent of all NET traffic.
+39 : 3 --> 0.0000 percent of all NET traffic.
+40 : 9 --> 0.0000 percent of all NET traffic.
+41 : 3 --> 0.0000 percent of all NET traffic.
+42 : 1 --> 0.0000 percent of all NET traffic.
+44 : 19 --> 0.0000 percent of all NET traffic.
+45 : 9 --> 0.0000 percent of all NET traffic.
+46 : 6 --> 0.0000 percent of all NET traffic.
+47 : 7 --> 0.0000 percent of all NET traffic.
+49 : 2 --> 0.0000 percent of all NET traffic.
+51 : 2 --> 0.0000 percent of all NET traffic.
+
+*** STATUS : SUBSCRIBER EROR ***
+
+1 : 209729 --> 0.3365 percent of all SUB traffic.
+6 : 268781 --> 0.4312 percent of all SUB traffic.
+10 : 28652 --> 0.0460 percent of all SUB traffic.
+11 : 51600 --> 0.0828 percent of all SUB traffic.
+13 : 16537 --> 0.0265 percent of all SUB traffic.
+16 : 4533 --> 0.0073 percent of all SUB traffic.
+18 : 24524 --> 0.0393 percent of all SUB traffic.
+19 : 10000 --> 0.0160 percent of all SUB traffic.
+22 : 7367 --> 0.0118 percent of all SUB traffic.
+25 : 1491 --> 0.0024 percent of all SUB traffic.
+33 : 97 --> 0.0002 percent of all SUB traffic.
+38 : 2 --> 0.0000 percent of all SUB traffic.
+43 : 19 --> 0.0000 percent of all SUB traffic.
+50 : 3 --> 0.0000 percent of all SUB traffic.
+
+*** STATUS : NO EROR ***
+
+2 : 1410451 --> 0.8672 percent of all NOE traffic.
+5 : 83376 --> 0.0513 percent of all NOE traffic.
+9 : 132157 --> 0.0813 percent of all NOE traffic.
+30 : 10 --> 0.0000 percent of all NOE traffic.
+31 : 521 --> 0.0003 percent of all NOE traffic.
+48 : 2 --> 0.0000 percent of all NOE traffic.
+
