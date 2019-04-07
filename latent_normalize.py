@@ -4,11 +4,6 @@ import numpy
 from tsne import TSNEReductor
 from pca import PCAReductor
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-sns.set()
-
 with open('fts.pkl', 'rb') as features_file:
     features = pickle.load(features_file)
     print(features.shape)
@@ -17,23 +12,17 @@ with open('fts.pkl', 'rb') as features_file:
         column = features[:, col]
         mean = numpy.mean(column)
         std = numpy.std(column)
-        #features[:, col] = (column - mean) / std
-
-diffs = []
-
-for i in range(features.shape[0]):
-    if features[i, 2425] - features[i, 1349] > 0:
-        diffs.append(features[i, 2425] - features[i, 1349])
-
-#n, bins, _ = plt.hist(diffs, 500)
-#print(n)
-#print(bins)
-#plt.show()
-
-#exit(0)
+        features[:, col] = (column - mean) / std
 
 ts = TSNEReductor(2, bl_position=273)
 
-ts.perform(features)
-ts.plot_data()
+with open('latent-norm.pkl', 'rb') as latent_file:
+    latent = pickle.load(latent_file)
+    #for col in range(latent.shape[1]):
+    #    column = latent[:, col]
+    #    mean = numpy.mean(column)
+    #    std = numpy.std(column)
+    #    latent[:, col] = (column - mean) / std
+    ts.perform(latent, features)
+    ts.plot_data()
 
