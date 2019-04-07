@@ -9,7 +9,7 @@ import seaborn as sns
 
 sns.set()
 
-with open('fts.pkl', 'rb') as features_file:
+with open('fts1.pkl', 'rb') as features_file:
     features = pickle.load(features_file)
     orig_fts = np.copy(features)
     print(features.shape)

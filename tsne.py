@@ -82,14 +82,14 @@ class TSNEReductor():
         #code.interact(local=locals())
 
         # CACHE
-        #self.X_tsne = pickle.load(open('tsne.pkl', 'rb'))
+        self.X_tsne = pickle.load(open('tsne_pp50.pkl', 'rb'))
 
         # Dimensionality reduction.
-        self.X_tsne = self.tsne.fit_transform(X)
+        # self.X_tsne = self.tsne.fit_transform(X)
 
         # CACHE
-        with open('tsne.pkl', 'wb') as lb:
-            pickle.dump(self.X_tsne, lb)
+        # with open('tsne.pkl', 'wb') as lb:
+        #     pickle.dump(self.X_tsne, lb)
 
     def plot_data(self):
         if self.X_tsne is None:
@@ -146,7 +146,113 @@ class TSNEReductor():
         # print(len(x_axis_data))
         # print(len(x_axis_black_listed))
 
-        # Plot.
+        ##################################
+ 
+        print("LABELING")
+        # Use all this shit to get labels and plot labels instead
+        labelinfo = [('GOOD', 0, '#006400'), 
+                     ('FRAUD', 1, '#e60b42'),
+                     ('APP', 2, '#f09a00'),
+                     ('CALLCENTRE', 3, '#0099cc'),
+                     ('UNKNOWN', 4, '#aaaaaa')]
+        print(self.X_tsne.shape)
+        nb_examples = self.X_tsne.shape[0]
+        self.labels = np.full((nb_examples, 1), 4)
+
+        # Rule 1: Toll-free i Tech => GOOD
+        idxs = np.reshape((self.tlf_mask == True), -1)
+        self.labels[idxs] = 0
+        idxs = np.reshape((self.tch_mask == True), -1)
+        self.labels[idxs] = 0
+
+        # Rule 2: Black-listed/EasyConnect/Low completion/Premium + bottom 4 clusters (conservative) => FRAUD
+        self.fraud_mask = np.zeros((nb_examples), dtype=bool)
+        self.fraud_mask = np.logical_or(self.bl_mask, self.fraud_mask)
+        self.fraud_mask = np.logical_or(self.ezy_mask, self.fraud_mask)
+        self.fraud_mask = np.logical_or(self.low_completion_mask, self.fraud_mask)
+        self.fraud_mask = np.logical_or(self.prm_mask, self.fraud_mask)
+
+        def bottom4clusters(x, y):
+            if x < -30:
+                return y < -45
+            elif x < -15:
+                return y < -50
+            elif x < 0:
+                return y < -52
+            elif x < 20:
+                return y < -30
+            else:
+                return y < -60
+
+        self.position_mask = np.zeros((nb_examples), dtype=bool)
+        for i in range(nb_examples):
+            x = self.X_tsne[i,0]
+            y = self.X_tsne[i,1]
+            self.position_mask[i] = bottom4clusters(x, y)
+
+        # mora i da je vec true i da je position dao true
+        self.fraud_mask = np.logical_and(self.position_mask, self.fraud_mask)
+        idxs = np.reshape((self.fraud_mask == True), -1)
+        self.labels[idxs] = 1
+
+        # Rule 3: DSP + cluster plavih levo => APP
+        def cluster_blue_left(x, y):
+            return x < -70 and y < 20
+        
+        self.position_mask = np.zeros((nb_examples), dtype=bool)
+        for i in range(nb_examples):
+            x = self.X_tsne[i,0]
+            y = self.X_tsne[i,1]
+            self.position_mask[i] = cluster_blue_left(x, y)
+        
+        self.app_mask = np.logical_and(self.position_mask, self.dsp_mask)
+        idxs = np.reshape((self.app_mask == True), -1)
+        self.labels[idxs] = 2
+
+        # Rule 4: high incoming + bottom right cluster (conservative) => CALL CENTRE
+        def cluster_bottom_right(x, y):
+            return x > 30 and y < -30
+
+        self.position_mask = np.zeros((nb_examples), dtype=bool)
+        for i in range(nb_examples):
+            x = self.X_tsne[i,0]
+            y = self.X_tsne[i,1]
+            self.position_mask[i] = cluster_bottom_right(x, y)
+        
+        self.cc_mask = np.logical_and(self.position_mask, self.inc_mask)
+        idxs = np.reshape((self.cc_mask == True), -1)
+        self.labels[idxs] = 3
+
+        # Rule 5: SMS received + nije u spec klusterima (6) => GOOD
+        for i in range(nb_examples):
+            x = self.X_tsne[i,0]
+            y = self.X_tsne[i,1]
+            tmp = not cluster_bottom_right(x, y)
+            tmp = tmp and not cluster_blue_left(x, y)
+            tmp = tmp and not bottom4clusters(x, y)
+            self.position_mask[i] = tmp
+
+        self.another_good_mask = np.logical_and(self.position_mask, self.sms_mask)
+        idxs = np.reshape((self.another_good_mask == True), -1)
+        self.labels[idxs] = 0
+
+        print("DONE LABELING")
+        for c in [4, 0, 1, 2, 3]:
+            mask = np.reshape((self.labels == c), -1)
+            xs = self.X_tsne[mask, 0]
+            ys = self.X_tsne[mask, 1]
+            plt.scatter(xs, ys, color=labelinfo[c][2], label=labelinfo[c][0])
+
+        print(self.labels.shape)
+        print(self.labels)
+        with open('labels.pkl', 'wb') as lt:
+            pickle.dump(self.labels, lt)
+
+        plt.legend()
+        plt.show()
+        return 
+        ##################################
+        
         plt.scatter(x_axis_norm, y_axis_norm, color='r', label='Remaining data')
         plt.scatter(x_axis_mob, y_axis_mob, color='c', label='Mobile')
         plt.scatter(x_axis_fix, y_axis_fix, color='m', label='Fixed')
