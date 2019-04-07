@@ -2,9 +2,10 @@ from autoencoder import AutoencoderDriver
 import numpy as np
 import pickle
 
-#nb_examples = 9872
-#nb_features = 2427
+# nb_examples = 9872
+# nb_features = 2427
 
+# Main class to invoke the autoencoder
 with open('fts1.pkl', 'rb') as features_file:
     features = pickle.load(features_file)
     nb_examples = features.shape[0]

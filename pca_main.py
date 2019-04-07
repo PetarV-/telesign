@@ -5,6 +5,7 @@ import random
 n_components = 2
 bl_position = 13
 
+# PCA dimensionality reduction main class
 X = np.random.rand(900, 1000)
 
 for i in range(X.shape[0]):

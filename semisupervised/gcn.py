@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+# Graph Convolutional Network cell
 class GCN(nn.Module):
     def __init__(self, in_ft, out_ft, act, bias=True):
         super(GCN, self).__init__()
@@ -30,8 +31,6 @@ class GCN(nn.Module):
         else:
             adj_uns = torch.unsqueeze(adj, dim=0)
             seq_fts_uns = torch.unsqueeze(seq_fts, dim=0)
-            #print("adj uns:", adj_uns.shape)
-            #print("seq fts uns:", seq_fts_uns.shape)
             out = torch.bmm(adj_uns, seq_fts_uns)
             out = torch.squeeze(out, dim=0)
         if self.bias is not None:
@@ -39,6 +38,7 @@ class GCN(nn.Module):
         
         return self.act(out)
 
+# GCN network
 class GCNet(nn.Module):
     def __init__(self, nb_features, nb_classes):
         super(GCNet, self).__init__()

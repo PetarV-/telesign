@@ -6,10 +6,12 @@ import time
 import pickle
 import numpy as np
 
+# Multilayer Perceptron
 class MLP(nn.Module):
     def __init__(self, nb_features, nb_classes):
         super(MLP, self).__init__()
 
+        # 4 layers with ReLU activations
         self.mlp = nn.Sequential(
             nn.Linear(nb_features, 256),
             nn.ReLU(inplace=True),

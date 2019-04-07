@@ -1,6 +1,6 @@
+# A data class for phone numbers
 class PhoneNumber():
 
-    # top level je samo array of phone numbers
     allowed_keys = [
         'hash', # str
         'id', # int

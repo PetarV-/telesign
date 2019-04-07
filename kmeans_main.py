@@ -2,6 +2,8 @@ from kmeans import KMeansPredictor
 import numpy as np
 import pickle
 
+# KMeans main class
+
 #nb_examples = 9872
 #nb_features = 2427
 

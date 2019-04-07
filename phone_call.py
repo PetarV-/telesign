@@ -1,3 +1,4 @@
+# A data class for phone calls
 class PhoneCall():
     allowed_keys = [
         'hash', # string

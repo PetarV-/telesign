@@ -4,6 +4,8 @@ from phone_number import PhoneNumber
 from phone_call import PhoneCall
 from features import FeatureExtractor
 
+# Utility functions
+
 # total number of phones in the dataset
 NB_PHONES = 9872
 # total number of features we use
@@ -13,11 +15,13 @@ NB_COUNTRIES = 266
 
 xtract = FeatureExtractor()
 
+# Create a one hot v ector
 def one_hot_vec(num_elements, which):
     ret = [0] * num_elements
     ret[which - 1] = 1
     return ret
 
+# Create a feature vector from the dataset
 def to_array(dataset):
     ret = np.empty((NB_PHONES, NB_FEATURES))
     adj = np.zeros((NB_PHONES, NB_PHONES))

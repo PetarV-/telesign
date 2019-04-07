@@ -1,6 +1,6 @@
+# A dictionary that maps phone number IDs
+# to PhoneNumber classes - top level data class.
 class Dataset():
-    # dict id(int) -> PhoneNumbers
-
     def __init__(self):
         self.nums = dict()
 

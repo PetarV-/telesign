@@ -9,6 +9,7 @@ from semi_dataset import SemiDataset
 from mlp import MLP
 import matplotlib.pyplot as plt
 
+# Driver class for GCN
 class SemiDriverGcn:
     def __init__(self, model, nb_features, nb_classes, nb_epochs=100, batch_size=64,
                  use_latent = False):
@@ -18,6 +19,7 @@ class SemiDriverGcn:
         self.batch_size = batch_size
         self.use_latent = use_latent
 
+        # Load adjacency matrix
         with open('adj.pkl', 'rb') as ff:
             self.adj = pickle.load(ff)
         sums = np.sum(self.adj, 1)
@@ -43,6 +45,7 @@ class SemiDriverGcn:
         print("Dataset len: {}".format(len(dataset)))
         self.model.eval()
         
+        # Get the outputs
         test_loss = 0
         nb_examples = 0
         nb_correct = 0
@@ -52,6 +55,7 @@ class SemiDriverGcn:
         Y = torch.tensor(dataset.Y).cuda()
         out = self.model(X, self.adj)
 
+        # Calculate the loss and predictions
         tmp = self.cross_entropy(out, Y.view(-1))
         tmp *= dataset.mask_test
         loss = torch.sum(tmp) / torch.sum(dataset.mask_test)
@@ -60,29 +64,18 @@ class SemiDriverGcn:
         _, predicted = torch.max(out.data, 1)
         all_logits.append(out.detach().cpu().numpy())
         predicted = predicted.view((-1, 1))
-        #print(predicted)
-        #print(batch_Y)
 
         examples = Y.size(0)
         nb_examples += examples
 
+        # Calculate accuracy
         pred_flags = (predicted == Y.data).double()
-        #print(pred_flags.shape)
-        #print("!")
-        #print(dataset.mask_test.shape)
         tmp = pred_flags.view(-1) * dataset.mask_test
-        #print(tmp.shape)
         tmp = torch.sum(tmp) / torch.sum(dataset.mask_test)
         acc = tmp
 
-        #correct = int(tmp.sum())
-        #nb_correct += correct
-        #print ('Batch acc: {}'.format(float(correct)/examples))
-
+        # Print stats
         t_end = time.time()
-        #print(acc)
-        #print(acc.shape)
-        #acc = float(nb_correct) / nb_examples
         print('Accuracy : {:.4f}'.format(acc),
             '|Loss: {:.6f}'.format(test_loss),
             '|Time: {:.2f}s'.format(t_end - t_start))
@@ -97,24 +90,22 @@ class SemiDriverGcn:
 
         self.model.train()
         for epoch in range(self.nb_epochs):
+            # One epoch of training, get the outputs
             epoch_loss = 0
             t_start = time.time()
             X = torch.tensor(dataset.X).cuda() 
             Y = torch.tensor(dataset.Y).cuda()
             self.optimizer.zero_grad()
 
-            #print(X.shape)
-            #print(self.adj.shape)
-
             out = self.model(X, self.adj)
 
+            # Calculate the loss
             tmp = self.cross_entropy(out, Y.view(-1))
             tmp = tmp.double().cuda()
-            #print(str(tmp))
-            #print(str(dataset.mask_train))
             tmp *= dataset.mask_train
             loss = torch.sum(tmp) / torch.sum(dataset.mask_train)
             
+            # Backprop
             loss.backward()
             self.optimizer.step()
             loss = loss.item()
@@ -128,45 +119,21 @@ class SemiDriverGcn:
         logits = self.run_test('all')
         row_sums = np.sum(np.exp(logits), axis=1)
         probs = np.exp(logits) / np.reshape(row_sums, (-1, 1))
-        #print(probs.shape)
-        #print(probs[:10, :])
-        #print()
 
         np.set_printoptions(suppress=True)
-        # POST PROCESSING
+
+        # Post processing, calculate entropy and thresh for unknown
         entropy = -np.sum(probs * np.log2(probs), axis=1)
         idxs = (entropy > 1.52)
-        samo_true = [z for z in idxs if z == True]
-        print(len(samo_true))
-        #for i in range(9872):
-        #    if not idxs[i]:
-        #        continue
-        #    print('Debaggg')
-        #    print(sorted(list(probs[i])))
-        #    input()
+        only_true = [z for z in idxs if z == True]
+        print(len(only_true))
         predictions = np.argmax(probs, axis=1)
         predictions[idxs] = 4
-        print(predictions.shape)
-        print(predictions)
-        #return
-
-
-        #tmp = sorted(list(entropy))
-        #plt.hist(tmp, bins=100)
-        #plt.show()
-        #return
-
-
-
-        #np_predictions = np.asarray(predictions)
-        
         predictions = np.reshape(predictions, (-1, 1))
 
-        #print(np_predictions.shape)
-        #print(np_predictions)
-
+        # Save predictions
         with open('predictions.pkl', 'wb') as lt:
             pickle.dump(predictions, lt)
         
-        print("E stigao si do kraja")
+        print("Semi driver done")
             

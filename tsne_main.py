@@ -9,6 +9,8 @@ import seaborn as sns
 
 sns.set()
 
+
+# Runs tSNE on feature vectors with (optional) normalization
 with open('fts1.pkl', 'rb') as features_file:
     features = pickle.load(features_file)
     orig_fts = np.copy(features)
@@ -19,19 +21,6 @@ with open('fts1.pkl', 'rb') as features_file:
         mean = np.mean(column)
         std = np.std(column)
         features[:, col] = (column - mean) / std
-
-diffs = []
-
-for i in range(features.shape[0]):
-    if features[i, 2425] - features[i, 1349] > 0:
-        diffs.append(features[i, 2425] - features[i, 1349])
-
-#n, bins, _ = plt.hist(diffs, 500)
-#print(n)
-#print(bins)
-#plt.show()
-
-#exit(0)
 
 ts = TSNEReductor(2, bl_position=273)
 

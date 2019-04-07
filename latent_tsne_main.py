@@ -4,6 +4,7 @@ import numpy
 from tsne import TSNEReductor
 from pca import PCAReductor
 
+# Runs tSNE on latent vectors with (optional) normalization
 with open('fts.pkl', 'rb') as features_file:
     features = pickle.load(features_file)
     print(features.shape)

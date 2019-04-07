@@ -5,6 +5,7 @@ import random
 from sklearn.cluster import KMeans
 import pickle 
 
+# K Means predictor
 class KMeansPredictor():
 
     def __init__(self, n_clusters, bl_position=273):
@@ -12,7 +13,6 @@ class KMeansPredictor():
         self.bl_position = bl_position
         self.kmeans = KMeans(n_clusters=self.n_clusters, random_state=None)
 
-    # prvo je na sta primeniti TSNE, drugo su originalni podaci (optional)
     def perform(self, X, X_orig=None):
         if X_orig is None:
             X_orig = X
@@ -32,7 +32,7 @@ class KMeansPredictor():
         # Perform kmeans.
         self.labels = self.kmeans.fit_predict(X)
 
-        # save 
+        # Save 
         with open('labels.pkl', 'wb') as lb:
             pickle.dump(self.labels, lb)
 

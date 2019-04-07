@@ -13,7 +13,8 @@ class Autoencoder(nn.Module):
 
         nb_mid_features = (nb_in_features + nb_latent_features) // 2
 
-        #self.batch_norm = nn.BatchNorm1d(nb_in_features)
+        # Experiment with batch norm
+        # self.batch_norm = nn.BatchNorm1d(nb_in_features)
 
         self.encoder = nn.Sequential(
             nn.Linear(nb_in_features, nb_mid_features),
@@ -29,15 +30,17 @@ class Autoencoder(nn.Module):
         )
     
     def forward(self, X):
-        #X_norm = self.batch_norm(X)
+        # X_norm = self.batch_norm(X)
         L = self.encoder(X) # skip batch norm
         rec = self.decoder(L)
         return (X, L, rec)
 
+# try 3 variants:
 # mean na mean (ae-norm.pkl)
 # original na batchnorm (ovo je radilo pre) (ae-batch2orig.pkl)
 # batchnorm na batchnorm (ae-batch.pkl)
 
+# A simple subclass of Dataset for the Loader
 class SimpleDataset(Dataset):
     def __init__(self, X):
         self.X = X
@@ -48,6 +51,7 @@ class SimpleDataset(Dataset):
     def __len__(self):
         return self.X.shape[0]
 
+# A driver class for the autoencoder
 class AutoencoderDriver:
     def __init__(self, nb_in_features, nb_latent_features,
                  nb_epochs=100, batch_size=64):
@@ -68,7 +72,7 @@ class AutoencoderDriver:
 
         print(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
-    # Train on given data (nb_examples X nb_in_features)
+    # Train on given data (shape is nb_examples X nb_in_features)
     def run(self, X):
         self.nb_examples = X.shape[0]
         assert(X.shape[1] == self.nb_in_features)
@@ -86,9 +90,8 @@ class AutoencoderDriver:
                 batch = batch.cuda()
                 self.optimizer.zero_grad()
                 X_norm, _, rec = self.autoencoder(batch)
-                #print(X.shape)
-                #print(L.shape)
-                #print(rec.shape)
+
+                # Backprop
                 loss = self.loss_function(batch, rec)
                 loss.backward()
                 self.optimizer.step()
@@ -102,13 +105,7 @@ class AutoencoderDriver:
 
         self.autoencoder.eval()
 
-        # Test?
-        #ex = torch.tensor(np.reshape(dataset[0], (1, -1)))
-        #ex = ex.cuda()
-        #print(ex)
-        #print(self.autoencoder(ex))
-
-        # Dump
+        # Print results
         x_torch = torch.tensor(X) 
         x_torch = x_torch.cuda()
         _, L_torch, _ = self.autoencoder(x_torch)

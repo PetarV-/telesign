@@ -5,6 +5,7 @@ from sklearn.decomposition import PCA
 
 sns.set()
 
+# PCA dimensionality reduction
 class PCAReductor():
 
     def __init__(self, n_components, bl_position=273):

@@ -9,6 +9,9 @@ from utils import to_array
 
 import pickle
 
+# Experiment with low completion feature
+# Code mostly copied from preprocess.py
+
 ts_format = '%Y-%m-%dT%H:%M:%S.%fZ'
 #The following part should create mappings between country codes and country names
 
