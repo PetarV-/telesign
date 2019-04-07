@@ -56,7 +56,7 @@ cur_id = 0
 hashes_to_id = dict()
 id_to_hashes = dict()
 
-numbers_file = open("task_and_samples/phone_numbers.csv", encoding = 'utf-8-sig')
+numbers_file = open("phone_numbers.csv", encoding = 'utf-8-sig')
 
 line_count = 0
 
@@ -94,7 +94,7 @@ for row in numbers_csv:
 
 print("Phone numbers done")
 
-traffic_file = open("task_and_samples/voice_traffic.csv", encoding = 'utf-8-sig')
+traffic_file = open("voice_traffic.csv", encoding = 'utf-8-sig')
 
 line_count = 0
 
