@@ -10,14 +10,7 @@ NB_TOCS = 5
 # call status number
 NB_STATUS = 3
 
-def vladamg98_metric(arr):
-    if len(arr) == 1:
-        return 0
-    last = arr[0]
-    d = []
-    for i in range(1, len(arr)):
-        d.append(arr[i] - last)
-        last = arr[i]
+def vladamg98_metric(d):
     sm = 0
     for x in d:
         sm += x
@@ -177,17 +170,26 @@ class FeatureExtractor():
 
     def get_timestamp_features(self, phone_calls):
         #print(len(phone_calls))
-        if len(phone_calls) == 0:
+        if len(phone_calls) < 2:
             return [0, 0, 0]
         #print(phone_calls)
         timestamps_in = []
         epoch = datetime.utcfromtimestamp(0)
         for phone_call in phone_calls:
             timestamps_in.append((phone_call['datetime'] - epoch).total_seconds())
-        #print(timestamps_in)
-        np_timestamps = np.asarray(timestamps_in)
+        differences = [timestamps_in[i + 1] - timestamps_in[i] for i in range(len(timestamps_in) - 1)]
+
+        np_diffs = np.asarray(differences)
         ret = []
-        ret.append(np.mean(np_timestamps))
-        ret.append(np.median(np_timestamps))
-        ret.append(vladamg98_metric(timestamps_in))
+        ret.append(np.mean(np_diffs))
+        ret.append(np.median(np_diffs))
+        mymetric = vladamg98_metric(differences)
+        """if mymetric > 0.99:
+            print('POSSIBLE FRAUD DETECTED')
+            print(differences)
+            for i in range(20):
+                print(phone_calls[i])
+            input()"""
+        ret.append(vladamg98_metric(differences))
+        print(vladamg98_metric(differences))
         return ret
