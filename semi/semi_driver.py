@@ -113,6 +113,12 @@ class SemiDriver:
         # POST PROCESSING
         entropy = -np.sum(probs * np.log2(probs), axis=1)
         idxs = (entropy > 1.52)
+        probs[idxs, :4] = 0
+        probs[idxs, 4] = 1 
+
+        with open('probs.pkl', 'wb') as lt:
+            pickle.dump(probs, lt)
+
         samo_true = [z for z in idxs if z == True]
         print(len(samo_true))
         #for i in range(9872):
@@ -123,8 +129,6 @@ class SemiDriver:
         #    input()
         predictions = np.argmax(probs, axis=1)
         predictions[idxs] = 4
-        print(predictions.shape)
-        print(predictions)
         #return
 
 

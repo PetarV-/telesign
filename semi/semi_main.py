@@ -18,7 +18,7 @@ driver = SemiDriver(model, nb_features, nb_classes,
                     use_latent=use_latent,
                     test_ratio = 0.2)
 accuracy = driver.run() # let's go
-accuracies.append(accuracy)
+#accuracies.append(accuracy)
 
 #print(list(zip(test_ratios, accuracies)))
 
