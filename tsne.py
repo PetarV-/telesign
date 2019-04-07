@@ -154,7 +154,7 @@ class TSNEReductor():
                      ('FRAUD', 1, '#e60b42'),
                      ('APP', 2, '#f09a00'),
                      ('CALLCENTRE', 3, '#0099cc'),
-                     ('UNKNOWN', 4, '#aaaaaa')]
+                     ('UNKNOWN', 4, '#000000')]
         print(self.X_tsne.shape)
         nb_examples = self.X_tsne.shape[0]
         self.labels = np.full((nb_examples, 1), 4)

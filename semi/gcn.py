@@ -36,8 +36,9 @@ class GCN(nn.Module):
 
 class GCNet(nn.Module):
     def __init__(self, nb_features, nb_classes):
-        self.gcn1 = GCN(nb_features, 64, nn.ReLU(()
-        self.gcn2 = GCN(64, nb_classes, nn.ReLU())
+        super(GCNet, self).__init__()
+        self.gcn1 = GCN(nb_features, 64, nn.ReLU())
+        self.gcn2 = GCN(64, nb_classes, lambda x: x)
 
     def forward(self, fts, adj):
         h_1 = self.gcn1(fts, adj)
