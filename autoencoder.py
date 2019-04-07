@@ -13,7 +13,7 @@ class Autoencoder(nn.Module):
 
         nb_mid_features = (nb_in_features + nb_latent_features) // 2
 
-        self.batch_norm = nn.BatchNorm1d(nb_in_features)
+        #self.batch_norm = nn.BatchNorm1d(nb_in_features)
 
         self.encoder = nn.Sequential(
             nn.Linear(nb_in_features, nb_mid_features),
@@ -29,10 +29,10 @@ class Autoencoder(nn.Module):
         )
     
     def forward(self, X):
-        X_norm = self.batch_norm(X)
-        L = self.encoder(X_norm) 
+        #X_norm = self.batch_norm(X)
+        L = self.encoder(X) # skip batch norm
         rec = self.decoder(L)
-        return (X_norm, L, rec)
+        return (X, L, rec)
 
 # mean na mean (ae-norm.pkl)
 # original na batchnorm (ovo je radilo pre) (ae-batch2orig.pkl)
@@ -116,5 +116,5 @@ class AutoencoderDriver:
         print(X.shape, ' ---> ', L.shape)
         print(L)
 
-        with open('ae-batch2orig.pkl', 'wb') as lt:
+        with open('ae-norm-newdata.pkl', 'wb') as lt:
             pickle.dump(L, lt)
