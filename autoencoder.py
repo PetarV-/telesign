@@ -111,5 +111,5 @@ class AutoencoderDriver:
         print(X.shape, ' ---> ', L.shape)
         print(L)
 
-        with open('latent-norm.pkl', 'wb') as lt:
+        with open('latent-batchnorm-100.pkl', 'wb') as lt:
             pickle.dump(L, lt)
