@@ -87,8 +87,8 @@ class TSNEReductor():
         x_axis_bl = self.X_tsne[self.bl_mask,0]
         y_axis_bl = self.X_tsne[self.bl_mask,1]
 
-        x_axis_inc = self.X[self.inc_mask,0]
-        y_axis_inc = self.X[self.inc_mask,1]
+        x_axis_inc = self.X_tsne[self.inc_mask,0]
+        y_axis_inc = self.X_tsne[self.inc_mask,1]
 
         x_axis_mob = self.X_tsne[self.mob_mask,0]
         y_axis_mob = self.X_tsne[self.mob_mask,1]
