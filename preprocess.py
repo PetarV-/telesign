@@ -8,7 +8,7 @@ from phone_number import PhoneNumber
 from utils import to_array
 
 import pickle
-
+"""
 ts_format = '%Y-%m-%dT%H:%M:%S.%fZ'
 #The following part should create mappings between country codes and country names
 
@@ -179,20 +179,7 @@ for p in dataset.values():
     p['ts_in'] = sorted(p['ts_in'], key = lambda x : x['datetime'])
 
 print("Done!")
-with open("dataset.pkl", "wb") as out_file:
-    pickle.dump(dataset, out_file)
-
-exit(0)
-
-for ph_id in range(1, 21):
-    print('Currently printing {0} {1} {2}', ph_id, len(dataset[ph_id]['ts_out']), len(dataset[ph_id]['ts_in']))
-    #for ph_call in dataset[ph_id]['ts_out']:
-    #    print(ph_call['datetime'], end = ' ')
-    #print()
-    #for ph_call in dataset[ph_id]['ts_in']:
-    #    print(ph_call['datetime'], end = ' ')
-    #print()
-
+"""
 dataset = pickle.load(open('dataset.pkl', 'rb'))
 ret, adj = to_array(dataset)
 

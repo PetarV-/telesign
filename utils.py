@@ -7,7 +7,7 @@ from features import FeatureExtractor
 # total number of phones in the dataset
 NB_PHONES = 9872
 # total number of features we use
-NB_FEATURES = 2441
+NB_FEATURES = 2444
 # total number of countries
 NB_COUNTRIES = 266
 
