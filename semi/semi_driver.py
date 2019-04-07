@@ -7,6 +7,7 @@ import pickle
 import numpy as np
 from semi_dataset import SemiDataset
 from mlp import MLP
+import matplotlib.pyplot as plt
 
 class SemiDriver:
     def __init__(self, model, nb_features, nb_classes, nb_epochs=100, batch_size=64,
@@ -38,14 +39,16 @@ class SemiDriver:
         test_loss = 0
         nb_examples = 0
         nb_correct = 0
+        all_logits = []
         t_start = time.time()
-        loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)      
+        loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=False)      
         for batch_X, batch_Y in loader:
             batch_X, batch_Y = batch_X.cuda(), batch_Y.cuda()
             out = self.model(batch_X)
             loss = self.cross_entropy(out, batch_Y.view(-1))
             test_loss += loss.item()
             _, predicted = torch.max(out.data, 1)
+            all_logits.append(out.detach().cpu().numpy())
             predicted = predicted.view((-1, 1))
             #print(predicted)
             #print(batch_Y)
@@ -63,6 +66,7 @@ class SemiDriver:
             '|Loss: {:.6f}'.format(test_loss / nb_batches),
             '|Time: {:.2f}s'.format(t_end - t_start))
         print()
+        return np.vstack(all_logits)
 
     def run(self):
         # Train
@@ -87,7 +91,7 @@ class SemiDriver:
                 epoch_loss += loss.item()
             t_end = time.time()
             nb_batches = len(loader)
-            if True:
+            if epoch % 10 == 9:
                 print('Epoch: {:04d}/{:04d}'.format(epoch+1, self.nb_epochs),
                       '|Loss: {:.6f}'.format(epoch_loss / nb_batches),
                       '|Time: {:.2f}s'.format(t_end - t_start))
@@ -95,4 +99,46 @@ class SemiDriver:
         # Test 
         self.run_test('train')
         self.run_test('test')
+        
+        logits = self.run_test('all')
+        row_sums = np.sum(np.exp(logits), axis=1)
+        probs = np.exp(logits) / np.reshape(row_sums, (-1, 1))
+        #print(probs.shape)
+        #print(probs[:10, :])
+        #print()
+
+        # POST PROCESSING
+        entropy = -np.sum(probs * np.log2(probs), axis=1)
+        idxs = (entropy > 1.5)
+        for i in range(1000):
+            if not idxs[i]:
+                continue
+            print('Debaggg')
+            print(probs[i])
+            input()
+        predictions = np.argmax(probs, axis=1)
+        predictions[idxs] = 4
+        print(predictions.shape)
+        print(predictions)
+        #return
+
+
+        #tmp = sorted(list(entropy))
+        #plt.hist(tmp, bins=100)
+        #plt.show()
+        #return
+
+
+
+        #np_predictions = np.asarray(predictions)
+        
+        predictions = np.reshape(predictions, (-1, 1))
+
+        #print(np_predictions.shape)
+        #print(np_predictions)
+
+        with open('predictions.pkl', 'wb') as lt:
+            pickle.dump(predictions, lt)
+        
+        print("E stigao si do kraja")
             

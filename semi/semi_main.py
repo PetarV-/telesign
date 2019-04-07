@@ -8,7 +8,7 @@ import numpy as np
 from semi_driver import SemiDriver 
 from mlp import MLP 
 
-use_latent = False
+use_latent = True
 nb_features = 100 if use_latent else 2444 #?
 nb_classes = 5
 model = MLP(nb_features, nb_classes)

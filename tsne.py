@@ -236,17 +236,23 @@ class TSNEReductor():
         idxs = np.reshape((self.another_good_mask == True), -1)
         self.labels[idxs] = 0
 
+        # Now drop those labels and use predictions
+        with open('predictions.pkl', 'rb') as ff:
+            self.labels = pickle.load(ff)
+
         print("DONE LABELING")
-        for c in [4, 0, 1, 2, 3]:
+        for c in [0, 1, 2, 3, 4]:
             mask = np.reshape((self.labels == c), -1)
             xs = self.X_tsne[mask, 0]
             ys = self.X_tsne[mask, 1]
             plt.scatter(xs, ys, color=labelinfo[c][2], label=labelinfo[c][0])
 
-        print(self.labels.shape)
-        print(self.labels)
-        with open('labels.pkl', 'wb') as lt:
-            pickle.dump(self.labels, lt)
+        #print(self.labels.shape)
+        #print(self.labels)
+        
+        # PICKLE LABELS
+        #with open('labels.pkl', 'wb') as lt:
+        #    pickle.dump(self.labels, lt)
 
         plt.legend()
         plt.show()

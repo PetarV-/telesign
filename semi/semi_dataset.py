@@ -26,11 +26,6 @@ class SemiDataset(Dataset):
             Y = pickle.load(Y_file)
             Y = np.reshape(Y, (-1, 1))
             # [0, 1, 2, 3, 4 = unknown]
-        
-        # SHUFFLE
-        perm = np.random.permutation(self.nb_examples)
-        X = X[perm]
-        Y = Y[perm]
 
         # check 
         print("Y shape: ", Y.shape)
@@ -40,6 +35,11 @@ class SemiDataset(Dataset):
             self.X = X 
             self.Y = Y 
             return
+
+        # SHUFFLE
+        #perm = np.random.permutation(self.nb_examples)
+        #X = X[perm]
+        #Y = Y[perm]
         
         idx = np.reshape((Y == 4), -1)
 
