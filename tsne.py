@@ -74,7 +74,7 @@ class TSNEReductor():
                 self.norm_mask[i] = True
         
         import pickle
-        with open('low_completion.pkl', 'rb') as ff:
+        with open('low_completion.pklmask', 'rb') as ff:
             self.low_completion_mask = pickle.load(ff)
         
         #import code 
@@ -98,7 +98,7 @@ class TSNEReductor():
 
         x_axis_inc = self.X_tsne[self.inc_mask,0]
         y_axis_inc = self.X_tsne[self.inc_mask,1]
-        
+
         x_axis_sms = self.X_tsne[self.sms_mask,0]
         y_axis_sms = self.X_tsne[self.sms_mask,1]
 
