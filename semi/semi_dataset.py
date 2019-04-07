@@ -62,8 +62,8 @@ class SemiDataset(Dataset):
             self.mask_train[idx_X_train] = 1
             self.mask_test = torch.zeros(self.nb_examples)
             self.mask_test[idx_X_test] = 1
-            self.mask_train.cuda()
-            self.mask_test.cuda()
+            self.mask_train = self.mask_train.double().cuda()
+            self.mask_test = self.mask_test.double().cuda()
         elif split != 'all':
             X_train, X_test, Y_train, Y_test = train_test_split(
                 X_labeled, Y_labeled, test_size=test_ratio, stratify=Y_labeled)

@@ -14,16 +14,21 @@ class SemiDriverGcn:
                  use_latent = False):
         self.nb_features = nb_features
         self.nb_classes = nb_classes
-        self.nb_epochs = nb_epochs 
+        self.nb_epochs = 200
         self.batch_size = batch_size
         self.use_latent = use_latent
 
+        with open('adj.pkl', 'rb') as ff:
+            self.adj = pickle.load(ff)
+        sums = np.sum(self.adj, 1)
+        self.adj = self.adj / sums
+        self.adj = torch.tensor(self.adj).cuda()
 
         self.model = model 
         self.model.double()
         self.model.cuda()
 
-        self.class_weights = torch.Tensor([1.0, 1.0, 0.002, 0.002, 1.0]).double().cuda()
+        self.class_weights = torch.Tensor([1.0, 1.0, 1.0, 1.0, 1.0]).double().cuda()
         self.cross_entropy = nn.CrossEntropyLoss(weight = self.class_weights, reduction='none')
         self.optimizer = torch.optim.Adam(
             self.model.parameters(), 
@@ -43,15 +48,15 @@ class SemiDriverGcn:
         nb_correct = 0
         all_logits = []
         t_start = time.time()
-        X = dataset.X.cuda() 
-        Y = dataset.Y.cuda()
-        out = self.model(X)
+        X = torch.tensor(dataset.X).cuda() 
+        Y = torch.tensor(dataset.Y).cuda()
+        out = self.model(X, self.adj)
 
         tmp = self.cross_entropy(out, Y.view(-1))
         tmp *= dataset.mask_test
         loss = torch.sum(tmp) / torch.sum(dataset.mask_test)
 
-        test_loss += loss.item()
+        test_loss = loss.item()
         _, predicted = torch.max(out.data, 1)
         all_logits.append(out.detach().cpu().numpy())
         predicted = predicted.view((-1, 1))
@@ -61,8 +66,13 @@ class SemiDriverGcn:
         examples = Y.size(0)
         nb_examples += examples
 
-        tmp = (predicted == Y.data) * dataset.mask_test
-        tmp /= torch.sum(dataset.mask_test)
+        pred_flags = (predicted == Y.data).double()
+        #print(pred_flags.shape)
+        #print("!")
+        #print(dataset.mask_test.shape)
+        tmp = pred_flags.view(-1) * dataset.mask_test
+        #print(tmp.shape)
+        tmp = torch.sum(tmp) / torch.sum(dataset.mask_test)
         acc = tmp
 
         #correct = int(tmp.sum())
@@ -70,10 +80,11 @@ class SemiDriverGcn:
         #print ('Batch acc: {}'.format(float(correct)/examples))
 
         t_end = time.time()
-        nb_batches = len(loader)
+        #print(acc)
+        #print(acc.shape)
         #acc = float(nb_correct) / nb_examples
         print('Accuracy : {:.4f}'.format(acc),
-            '|Loss: {:.6f}'.format(test_loss / nb_batches),
+            '|Loss: {:.6f}'.format(test_loss),
             '|Time: {:.2f}s'.format(t_end - t_start))
         print()
         return np.vstack(all_logits)
@@ -84,33 +95,33 @@ class SemiDriverGcn:
         dataset = SemiDataset(self.use_latent, 'all', is_graph = True)
 
 
-        with open('adj.pkl', 'rb') as ff:
-            self.adj = pickle.load(ff)
-        sums = np.sum(self.adj, 1)
-        self.adj = self.adj / sums
-
-
         self.model.train()
         for epoch in range(self.nb_epochs):
             epoch_loss = 0
             t_start = time.time()
-            X = dataset.X.cuda() 
-            Y = dataset.Y.cuda()
+            X = torch.tensor(dataset.X).cuda() 
+            Y = torch.tensor(dataset.Y).cuda()
             self.optimizer.zero_grad()
+
+            #print(X.shape)
+            #print(self.adj.shape)
+
             out = self.model(X, self.adj)
 
             tmp = self.cross_entropy(out, Y.view(-1))
+            tmp = tmp.double().cuda()
+            #print(str(tmp))
+            #print(str(dataset.mask_train))
             tmp *= dataset.mask_train
             loss = torch.sum(tmp) / torch.sum(dataset.mask_train)
             
             loss.backward()
             self.optimizer.step()
-            epoch_loss += loss.item()
+            loss = loss.item()
             t_end = time.time()
-            nb_batches = len(loader)
-            if epoch % 10 == 9:
+            if True:
                 print('Epoch: {:04d}/{:04d}'.format(epoch+1, self.nb_epochs),
-                      '|Loss: {:.6f}'.format(epoch_loss / nb_batches),
+                      '|Loss: {:.6f}'.format(loss),
                       '|Time: {:.2f}s'.format(t_end - t_start))
 
         # Test 
