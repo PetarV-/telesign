@@ -24,28 +24,18 @@ def vladamg98_metric(d):
 
 class FeatureExtractor():
 
-    def _is_successful(self, phone_call):
-        status = phone_call['status_cat']
+    def __init__(self):
+        self.status_msg_map_one_hot = {
+            'Subscriber$Unallocated or unassigned number' : 5,
+            'Network$No route to destination' : 7
+        }
 
-        # No error
-        if status[2] == 1:
-            return True
-
-        # Subscriber error
-        if status[1] == 1:
-            # TODO
-            return False
-
-        # Network error
-        if status[0] == 1:
-            # TODO
-            return False
 
     def _get_mean(self, key, use_only_successful):
         arr = []
         for phone_call in self.phone_calls:
             if use_only_successful:
-                if self._is_successful(phone_call):
+                if phone_call['call_duration'] > 0:
                     arr.append(phone_call[key])
             else:
                 arr.append(phone_call[key])
@@ -59,7 +49,7 @@ class FeatureExtractor():
         arr = []
         for phone_call in self.phone_calls:
             if use_only_successful:
-                if phone_call['status_cat'][2] == 1:
+                if phone_call['call_duration'] > 0:
                     arr.append(phone_call[key])
             else:
                 arr.append(phone_call[key])
@@ -84,11 +74,38 @@ class FeatureExtractor():
         status_vec = np.zeros(NB_STATUS)
         if len(phone_calls) > 0:
             for phone_call in phone_calls:
-                status_vec += status_vec['status_cat']
+                status_vec += phone_call['status_cat']
 
             status_vec /= np.sum(status_vec)
 
         feature_vec.extend(status_vec)
+
+        # Call status message.
+        msg_vec = np.zeros(len(self.status_msg_map_one_hot) + 1)
+        if len(phone_calls) > 0:
+            for phone_call in phone_calls:
+                curr_msg = np.zeros(len(self.status_msg_map_one_hot) + 1)
+
+                one_hot_idx = 0
+                for key in self.status_msg_map_one_hot:
+                    idx = self.status_msg_map_one_hot[key]
+                    if phone_call['status_name'][idx] == 1:
+                        # Found
+                        curr_msg[one_hot_idx] = 1
+                        break
+                    one_hot_idx += 1
+                else:
+                    # Didn't find anything. Make one hot for 'Other'
+                    curr_msg[one_hot_idx] = 1
+
+                msg_vec += curr_msg
+
+            msg_vec /= np.sum(msg_vec)
+
+        feature_vec.extend(msg_vec)
+
+        # Roaming.
+        feature_vec.append(self._get_mean('roaming', True))
 
         return feature_vec
 
