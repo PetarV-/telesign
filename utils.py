@@ -1,7 +1,7 @@
 import numpy as np
 
 from phone_number import PhoneNumber
-from phone_call import PhoneCall 
+from phone_call import PhoneCall
 from features import FeatureExtractor
 
 # total number of phones in the dataset
@@ -36,9 +36,9 @@ def to_array(dataset):
         ft_vec.extend(xtract.get_feature_vec(cur_phone['ts_out'], True))
         # 6. ts_in
         ft_vec.extend(xtract.get_feature_vec(cur_phone['ts_in'], False))
-
+        # 7. vlada features
+        ft_vec.extend(xtract.get_timestamp_features(cur_phone['ts_out']))
         ret[i] = ft_vec
         adj[i] = xtract.get_adj_vec(cur_phone['ts_in'], cur_phone['ts_out'], i)
 
     return ret, adj
-
