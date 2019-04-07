@@ -7,7 +7,7 @@ from features import FeatureExtractor
 # total number of phones in the dataset
 NB_PHONES = 9872
 # total number of features we use
-NB_FEATURES = 2427
+NB_FEATURES = 2441
 # total number of countries
 NB_COUNTRIES = 266
 
@@ -36,7 +36,11 @@ def to_array(dataset):
         ft_vec.extend(xtract.get_feature_vec(cur_phone['ts_out'], True))
         # 6. ts_in
         ft_vec.extend(xtract.get_feature_vec(cur_phone['ts_in'], False))
-        # 7. vlada features
+        # 7. status + roaming features: out
+        ft_vec.extend(xtract.get_status_feature_vec(cur_phone['ts_out']))
+        # 8. status + roaming features : in
+        ft_vec.extend(xtract.get_status_feature_vec(cur_phone['ts_in']))
+        # 9. vlada features
         ft_vec.extend(xtract.get_timestamp_features(cur_phone['ts_out']))
         ret[i] = ft_vec
         adj[i] = xtract.get_adj_vec(cur_phone['ts_in'], cur_phone['ts_out'], i)

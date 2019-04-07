@@ -104,6 +104,9 @@ class FeatureExtractor():
 
         feature_vec.extend(msg_vec)
 
+        # Roaming.
+        feature_vec.append(self._get_mean('roaming', True))
+
         return feature_vec
 
     def get_feature_vec(self, phone_calls, is_a):
