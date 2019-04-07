@@ -2,6 +2,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
+import pickle
 
 sns.set()
 
@@ -24,7 +25,15 @@ class TSNEReductor():
         self.out_position = 2425
 
         self.n_components = n_components
+
+        # CACHED
+        # self.tsne = pickle.load(open('tsne.pkl', 'rb'))
+
         self.tsne = TSNE(n_components)
+
+        # CACHE
+        with open('tsne.pkl', 'wb') as lb:
+            pickle.dump(self.labels, lb)
 
     # prvo je na sta primeniti TSNE, drugo su originalni podaci (optional)
     def perform(self, X, X_orig=None):
@@ -73,7 +82,6 @@ class TSNEReductor():
             else:
                 self.norm_mask[i] = True
         
-        import pickle
         with open('low_completion.pklmask', 'rb') as ff:
             self.low_completion_mask = pickle.load(ff)
         
