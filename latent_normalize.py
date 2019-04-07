@@ -10,7 +10,7 @@ with open('fts.pkl', 'rb') as features_file:
 
 ts = TSNEReductor(2, bl_position=273)
 
-with open('ae-batch2orig.pkl', 'rb') as latent_file:
+with open('ae-norm-newdata.pkl', 'rb') as latent_file:
     latent = pickle.load(latent_file)
     #for col in range(latent.shape[1]):
     #    column = latent[:, col]
