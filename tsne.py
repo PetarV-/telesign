@@ -26,14 +26,7 @@ class TSNEReductor():
 
         self.n_components = n_components
 
-        # CACHED
-        # self.tsne = pickle.load(open('tsne.pkl', 'rb'))
-
         self.tsne = TSNE(n_components)
-
-        # CACHE
-        with open('tsne.pkl', 'wb') as lb:
-            pickle.dump(self.tsne, lb)
 
     # prvo je na sta primeniti TSNE, drugo su originalni podaci (optional)
     def perform(self, X, X_orig=None):
@@ -88,8 +81,15 @@ class TSNEReductor():
         #import code 
         #code.interact(local=locals())
 
+        # CACHE
+        #self.X_tsne = pickle.load(open('tsne.pkl', 'rb'))
+
         # Dimensionality reduction.
         self.X_tsne = self.tsne.fit_transform(X)
+
+        # CACHE
+        with open('tsne.pkl', 'wb') as lb:
+            pickle.dump(self.X_tsne, lb)
 
     def plot_data(self):
         if self.X_tsne is None:
