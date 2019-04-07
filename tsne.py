@@ -33,7 +33,7 @@ class TSNEReductor():
 
         # CACHE
         with open('tsne.pkl', 'wb') as lb:
-            pickle.dump(self.labels, lb)
+            pickle.dump(self.tsne, lb)
 
     # prvo je na sta primeniti TSNE, drugo su originalni podaci (optional)
     def perform(self, X, X_orig=None):
