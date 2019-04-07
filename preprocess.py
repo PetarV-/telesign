@@ -56,7 +56,7 @@ cur_id = 0
 hashes_to_id = dict()
 id_to_hashes = dict()
 
-numbers_file = open("phone_numbers.csv", encoding = 'utf-8-sig')
+numbers_file = open("task_and_samples/phone_numbers.csv", encoding = 'utf-8-sig')
 
 line_count = 0
 
@@ -94,7 +94,7 @@ for row in numbers_csv:
 
 print("Phone numbers done")
 
-traffic_file = open("voice_traffic.csv", encoding = 'utf-8-sig')
+traffic_file = open("task_and_samples/voice_traffic.csv", encoding = 'utf-8-sig')
 
 line_count = 0
 
@@ -128,6 +128,8 @@ for row in traffic_csv:
         cur_id += 1
         hashes_to_id[hash_b] = cur_id
         id_to_hashes[cur_id] = hash_b
+    #if hashes_to_id[hash_a] > 20 and hashes_to_id[hash_b] > 20:
+    #    continue
     phone_call['b_unknown'] = 0 if dataset.contains(hashes_to_id[hash_b]) else 1
     phone_call['id_b'] = hashes_to_id[hash_b]
 
@@ -155,7 +157,7 @@ for row in traffic_csv:
     if not phone_call['a_unknown']:
         orig_country = dataset[phone_call['id_a']]['country']
     phone_call['roaming'] = 1 if row_tocs == 'F/MNO' and orig_country != phone_call['transm_op_country'] else 0
-    
+
     # skippity skip (REMOVE)
     #both = [hash_a, hash_b]
     #if '27aa6048a8af29e92bca' not in both and 'a2e3d9ecd70fae491b2f' not in both:
@@ -177,12 +179,26 @@ for p in dataset.values():
     p['ts_in'] = sorted(p['ts_in'], key = lambda x : x['datetime'])
 
 print("Done!")
+with open("dataset.pkl", "wb") as out_file:
+    pickle.dump(dataset, out_file)
 
+exit(0)
+
+for ph_id in range(1, 21):
+    print('Currently printing {0} {1} {2}', ph_id, len(dataset[ph_id]['ts_out']), len(dataset[ph_id]['ts_in']))
+    #for ph_call in dataset[ph_id]['ts_out']:
+    #    print(ph_call['datetime'], end = ' ')
+    #print()
+    #for ph_call in dataset[ph_id]['ts_in']:
+    #    print(ph_call['datetime'], end = ' ')
+    #print()
+
+dataset = pickle.load(open('dataset.pkl', 'rb'))
 ret, adj = to_array(dataset)
 
-with open('fts.pkl', 'wb') as pf:
+with open('fts1.pkl', 'wb') as pf:
     pickle.dump(ret, pf)
-with open('adj.pkl', 'wb') as pf:
+with open('adj1.pkl', 'wb') as pf:
     pickle.dump(adj, pf)
 
 # We have the dataset!
