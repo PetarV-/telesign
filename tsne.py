@@ -20,6 +20,8 @@ class TSNEReductor():
         self.tlf_position = bl_position - 2
         self.ezy_position = 1341
         self.dsp_position = 1342 
+        self.in_position = 1349
+        self.out_position = 2425
 
         self.n_components = n_components
         self.tsne = TSNE(n_components)
@@ -40,7 +42,9 @@ class TSNEReductor():
         self.ott_mask = np.zeros((X_orig.shape[0]), dtype=bool)
         self.prm_mask = np.zeros((X_orig.shape[0]), dtype=bool)
         self.tlf_mask = np.zeros((X_orig.shape[0]), dtype=bool)
-        
+
+        self.inc_mask = np.zeros((X_orig.shape[0]), dtype=bool)
+
         self.norm_mask = np.zeros((X_orig.shape[0]), dtype=bool)
         for i in range(X_orig.shape[0]):
             sample = X_orig[i]
@@ -50,6 +54,8 @@ class TSNEReductor():
                 self.ezy_mask[i] = True
             elif sample[self.dsp_position] > 0.1:
                 self.dsp_mask[i] = True
+            elif sample[self.out_position] - sample[self.in_position] > 100:
+                self.inc_mask[i] = True
             elif sample[self.mob_position] == 1:
                 self.mob_mask[i] = True
             elif sample[self.fix_position] == 1:
@@ -80,6 +86,9 @@ class TSNEReductor():
         # Coordinates for black listed.
         x_axis_bl = self.X_tsne[self.bl_mask,0]
         y_axis_bl = self.X_tsne[self.bl_mask,1]
+
+        x_axis_inc = self.X_tsne[self.inc_mask,0]
+        y_axis_inc = self.X_tsne[self.inc_mask,1]
 
         x_axis_mob = self.X_tsne[self.mob_mask,0]
         y_axis_mob = self.X_tsne[self.mob_mask,1]
@@ -121,6 +130,7 @@ class TSNEReductor():
         plt.scatter(x_axis_prm, y_axis_prm, color='b', label='Premium')
         plt.scatter(x_axis_tlf, y_axis_tlf, color='g', label='Toll-free')
 
+        plt.scatter(x_axis_inc, y_axis_inc, color='#228B22', label='High incoming')
         plt.scatter(x_axis_dsp, y_axis_dsp, color='#000080', label='DSP')
         plt.scatter(x_axis_ezy, y_axis_ezy, color='#2F4F4F', label='EasyConnect')
         plt.scatter(x_axis_bl, y_axis_bl, color='k', label='Black listed')
